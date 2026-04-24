@@ -503,6 +503,174 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
 .modal-section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 #modal-wa .modal-section-label { color: #5a7a64; }
 #modal-sf .modal-section-label { color: #7a8a80; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — TABLET & MOBILE
+───────────────────────────────────────── */
+
+/* Tab text responsive */
+.sh-tab-full { display: inline; }
+.sh-tab-short { display: none; }
+
+@media (max-width: 640px) {
+  .sh-tab-full { display: none; }
+  .sh-tab-short { display: inline; }
+}
+
+/* ── TABLET (640px–1024px) ── */
+@media (max-width: 1024px) {
+
+  /* Header — hide brand text, compact tabs */
+  .sh-brand { min-width: auto; padding: 0 16px; border-right: none; }
+  .sh-brand-sub { display: none; }
+  .sh-brand-text { font-size: 13px; }
+
+  .sh-tab { padding: 0 16px; font-size: 12px; gap: 6px; }
+  .sh-tab-badge { display: none; }
+
+  /* Toolbar — two rows */
+  .p-toolbar { padding: 10px 16px; gap: 8px; }
+  .filter-label { display: none; }
+
+  /* Progress */
+  .p-progress { padding: 8px 16px; }
+
+  /* Count bar */
+  .count-bar { padding: 7px 16px; font-size: 11px; }
+
+  /* Main padding */
+  #panel-wa .p-main,
+  #panel-sf .p-main { padding: 16px; }
+
+  /* Table — hide less important columns */
+  .col-objetivo,
+  .col-preview  { display: none; }
+
+  /* Table cells tighter */
+  #panel-wa td,
+  #panel-sf td  { padding: 10px 10px; }
+  #panel-wa thead th,
+  #panel-sf thead th { padding: 10px 10px; }
+
+  /* Timeline grid — 2 columns */
+  #panel-wa .timeline-items,
+  #panel-sf .timeline-items { grid-template-columns: repeat(2, 1fr); }
+
+  /* Modal full width */
+  .modal-overlay { padding: 12px; }
+  .modal { max-height: 92vh; }
+  .modal-header { padding: 16px 18px 12px; }
+  .modal-body   { padding: 16px 18px 24px; }
+}
+
+/* ── MOBILE (< 640px) ── */
+@media (max-width: 640px) {
+
+  /* Header — icon only in tabs */
+  .super-header { height: 52px; }
+  .sh-brand { display: none; }
+
+  .sh-tab { padding: 0 14px; flex-direction: column; gap: 2px; font-size: 10px; }
+  .sh-tab-icon { font-size: 20px; }
+  .sh-tab-text { display: block; font-size: 10px; }
+
+  /* Toolbar — stack vertically */
+  .p-toolbar {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .p-toolbar-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* Selects full width */
+  .p-toolbar select,
+  .p-toolbar input[type="text"] {
+    flex: 1;
+    width: 100%;
+    font-size: 14px; /* prevent zoom on iOS */
+    padding: 9px 12px;
+  }
+
+  /* Buttons row */
+  .p-toolbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .p-btn { flex: 1; text-align: center; font-size: 12px; padding: 8px 10px; }
+
+  /* View toggle stretches full width */
+  .view-toggle { margin-left: 0; width: 100%; }
+  .view-btn { flex: 1; text-align: center; padding: 9px 8px; }
+
+  /* Progress */
+  .p-progress { padding: 8px 12px; }
+  .prog-label:first-child { display: none; }
+
+  /* Count bar */
+  .count-bar { padding: 6px 12px; font-size: 11px; }
+
+  /* Main */
+  #panel-wa .p-main,
+  #panel-sf .p-main { padding: 12px; }
+
+  /* Table → hidden on mobile, show timeline instead */
+  #panel-wa #wa-table-view,
+  #panel-sf #sf-table-view { display: none !important; }
+
+  /* Timeline always visible on mobile, single column */
+  #panel-wa #wa-timeline-view,
+  #panel-sf #sf-timeline-view {
+    display: block !important;
+  }
+
+  #panel-wa .timeline-items,
+  #panel-sf .timeline-items { grid-template-columns: 1fr; gap: 10px; }
+
+  #panel-wa .day-title,
+  #panel-sf .day-title { font-size: 20px; }
+
+  /* Cards tighter */
+  #panel-wa .tl-card,
+  #panel-sf .tl-card { padding: 14px; }
+
+  #panel-wa .tl-hora,
+  #panel-sf .tl-hora { font-size: 18px; }
+
+  /* Modal full screen */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal {
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+  }
+  .modal-header { padding: 16px 16px 12px; }
+  .modal-body   { padding: 14px 16px 32px; }
+  .modal-title  { font-size: 17px; }
+
+  /* Modal handle (bottom sheet indicator) */
+  .modal::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 99px;
+    margin: 10px auto 4px;
+  }
+
+  /* Copy btn full width */
+  .copy-btn { width: 100%; text-align: center; padding: 12px; font-size: 14px; }
+
+  /* View toggle hide on mobile (always timeline) */
+  .view-toggle { display: none; }
+}
 </style>
 </head>
 <body>
@@ -519,12 +687,12 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
   <div class="sh-tabs">
     <button class="sh-tab active-wa" id="shtab-wa" onclick="switchChannel('wa')">
       <span class="sh-tab-icon">💬</span>
-      WhatsApp Difusiones
+      <span class="sh-tab-text"><span class="sh-tab-full">WhatsApp Difusiones</span><span class="sh-tab-short">WA</span></span>
       <span class="sh-tab-badge" id="wa-badge">0/0</span>
     </button>
     <button class="sh-tab" id="shtab-sf" onclick="switchChannel('sf')">
       <span class="sh-tab-icon">📤</span>
-      Sendflow · Grupo
+      <span class="sh-tab-text"><span class="sh-tab-full">Sendflow · Grupo</span><span class="sh-tab-short">Sendflow</span></span>
       <span class="sh-tab-badge" id="sf-badge">0/0</span>
     </button>
   </div>
@@ -544,19 +712,23 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
 
   <!-- Toolbar -->
   <div class="p-toolbar">
-    <span class="filter-label">Fase</span>
-    <select id="wa-filter-fase">
-      <option value="">Todas</option>
-      <option>Recordatorio</option><option>Replay</option><option>Venta</option>
-    </select>
-    <span class="filter-label">Día</span>
-    <select id="wa-filter-dia"><option value="">Todos</option></select>
-    <input type="text" id="wa-search" placeholder="Buscar…" style="width:200px">
-    <button class="p-btn" onclick="waClearFilters()">✕ Limpiar</button>
-    <button class="p-btn p-btn-danger" onclick="waReset()">🔄 Reset</button>
-    <div class="view-toggle">
-      <button class="view-btn active" id="wa-btn-table" onclick="waSetView('table')">Tabla</button>
-      <button class="view-btn" id="wa-btn-tl" onclick="waSetView('timeline')">Timeline</button>
+    <div class="p-toolbar-row">
+      <select id="wa-filter-fase">
+        <option value="">Todas las fases</option>
+        <option>Recordatorio</option><option>Replay</option><option>Venta</option>
+      </select>
+      <select id="wa-filter-dia"><option value="">Todos los días</option></select>
+    </div>
+    <div class="p-toolbar-row">
+      <input type="text" id="wa-search" placeholder="Buscar…" style="flex:1">
+    </div>
+    <div class="p-toolbar-actions">
+      <button class="p-btn" onclick="waClearFilters()">✕ Limpiar</button>
+      <button class="p-btn p-btn-danger" onclick="waReset()">🔄 Reset</button>
+      <div class="view-toggle">
+        <button class="view-btn active" id="wa-btn-table" onclick="waSetView('table')">Tabla</button>
+        <button class="view-btn" id="wa-btn-tl" onclick="waSetView('timeline')">Timeline</button>
+      </div>
     </div>
   </div>
 
@@ -575,8 +747,8 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
             <th onclick="waSortBy('dia')">FECHA &amp; HORA</th>
             <th onclick="waSortBy('segmento')">SEGMENTO</th>
             <th onclick="waSortBy('nombre')">ID MENSAJE</th>
-            <th>OBJETIVO</th>
-            <th>COPY (preview)</th>
+            <th class="col-objetivo">OBJETIVO</th>
+            <th class="col-preview">COPY (preview)</th>
             <th></th>
           </tr></thead>
           <tbody id="wa-tbody"></tbody>
@@ -601,19 +773,23 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
 
   <!-- Toolbar -->
   <div class="p-toolbar">
-    <span class="filter-label">Fase</span>
-    <select id="sf-filter-fase">
-      <option value="">Todas</option>
-      <option>Recordatorio</option><option>Expectativa</option><option>Evento</option><option>Venta</option>
-    </select>
-    <span class="filter-label">Día</span>
-    <select id="sf-filter-dia"><option value="">Todos</option></select>
-    <input type="text" id="sf-search" placeholder="Buscar…" style="width:200px">
-    <button class="p-btn" onclick="sfClearFilters()">✕ Limpiar</button>
-    <button class="p-btn p-btn-danger" onclick="sfReset()">🔄 Reset</button>
-    <div class="view-toggle">
-      <button class="view-btn active" id="sf-btn-table" onclick="sfSetView('table')">Tabla</button>
-      <button class="view-btn" id="sf-btn-tl" onclick="sfSetView('timeline')">Timeline</button>
+    <div class="p-toolbar-row">
+      <select id="sf-filter-fase">
+        <option value="">Todas las fases</option>
+        <option>Recordatorio</option><option>Expectativa</option><option>Evento</option><option>Venta</option>
+      </select>
+      <select id="sf-filter-dia"><option value="">Todos los días</option></select>
+    </div>
+    <div class="p-toolbar-row">
+      <input type="text" id="sf-search" placeholder="Buscar…" style="flex:1">
+    </div>
+    <div class="p-toolbar-actions">
+      <button class="p-btn" onclick="sfClearFilters()">✕ Limpiar</button>
+      <button class="p-btn p-btn-danger" onclick="sfReset()">🔄 Reset</button>
+      <div class="view-toggle">
+        <button class="view-btn active" id="sf-btn-table" onclick="sfSetView('table')">Tabla</button>
+        <button class="view-btn" id="sf-btn-tl" onclick="sfSetView('timeline')">Timeline</button>
+      </div>
     </div>
   </div>
 
@@ -631,9 +807,9 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
             <th onclick="sfSortBy('fase')">FASE</th>
             <th onclick="sfSortBy('dia')">FECHA &amp; HORA</th>
             <th onclick="sfSortBy('nombre')">ID MENSAJE</th>
-            <th>OBJETIVO</th>
+            <th class="col-objetivo">OBJETIVO</th>
             <th>RECURSO</th>
-            <th>MENSAJE (preview)</th>
+            <th class="col-preview">MENSAJE (preview)</th>
             <th></th>
           </tr></thead>
           <tbody id="sf-tbody"></tbody>
@@ -1221,8 +1397,8 @@ function waRenderTable(data) {
       <td><div class="fecha-dia">${d.dia}</div><div class="fecha-hora">${d.hora}</div></td>
       <td><div class="seg-etiqueta">Campaña Taller</div><div class="seg-estado">${d.segmento.split('·')[1]?.trim()||''}</div></td>
       <td class="td-nombre">${d.nombre}</td>
-      <td style="font-size:12px;color:#6b8c6b;max-width:150px">${d.objetivo}</td>
-      <td><div class="copy-preview">${preview}</div></td>
+      <td class="col-objetivo" style="font-size:12px;color:#6b8c6b;max-width:150px">${d.objetivo}</td>
+      <td class="col-preview"><div class="copy-preview">${preview}</div></td>
       <td><button class="btn-eye" onclick="event.stopPropagation();waOpenModal(${idx})">Ver →</button></td>
     </tr>`;
   }).join('');
@@ -1261,9 +1437,9 @@ function sfRenderTable(data) {
       <td>${sfBadge(m.fase)}</td>
       <td><div class="fecha-dia">${m.dia}</div><div class="fecha-hora">${m.hora}</div></td>
       <td class="td-nombre">${m.nombre}</td>
-      <td style="font-size:12px;color:#7a8a80;max-width:150px">${m.objetivo}</td>
+      <td class="col-objetivo" style="font-size:12px;color:#7a8a80;max-width:150px">${m.objetivo}</td>
       <td>${recursoTag(m.recurso)}</td>
-      <td><div class="msg-preview">${preview}</div></td>
+      <td class="col-preview"><div class="msg-preview">${preview}</div></td>
       <td><button class="btn-eye" onclick="event.stopPropagation();sfOpenModal(${m._idx})">Ver →</button></td>
     </tr>`;
   }).join('');
