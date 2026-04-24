@@ -620,16 +620,6 @@ body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden
   #panel-wa .p-main,
   #panel-sf .p-main { padding: 12px; }
 
-  /* Table → hidden on mobile, show timeline instead */
-  #panel-wa #wa-table-view,
-  #panel-sf #sf-table-view { display: none !important; }
-
-  /* Timeline always visible on mobile, single column */
-  #panel-wa #wa-timeline-view,
-  #panel-sf #sf-timeline-view {
-    display: block !important;
-  }
-
   #panel-wa .timeline-items,
   #panel-sf .timeline-items { grid-template-columns: 1fr; gap: 10px; }
 
@@ -1478,22 +1468,49 @@ function sfRender() {
   if(sfView==='table') sfRenderTable(f); else sfRenderTimeline(f);
 }
 
+function isMobile() { return window.innerWidth < 640; }
+
 function waSetView(v){
-  waView=v;
-  document.getElementById('wa-table-view').style.display=v==='table'?'block':'none';
-  document.getElementById('wa-timeline-view').style.display=v==='timeline'?'block':'none';
-  document.getElementById('wa-btn-table').classList.toggle('active',v==='table');
-  document.getElementById('wa-btn-tl').classList.toggle('active',v==='timeline');
+  waView = isMobile() ? 'timeline' : v;
+  const tableEl    = document.getElementById('wa-table-view');
+  const timelineEl = document.getElementById('wa-timeline-view');
+  if(isMobile()){
+    tableEl.style.display    = 'none';
+    timelineEl.style.display = 'block';
+    document.getElementById('wa-btn-table').classList.remove('active');
+    document.getElementById('wa-btn-tl').classList.add('active');
+  } else {
+    tableEl.style.display    = waView==='table'  ? 'block' : 'none';
+    timelineEl.style.display = waView==='timeline'? 'block' : 'none';
+    document.getElementById('wa-btn-table').classList.toggle('active', waView==='table');
+    document.getElementById('wa-btn-tl').classList.toggle('active',    waView==='timeline');
+  }
   waRender();
 }
+
 function sfSetView(v){
-  sfView=v;
-  document.getElementById('sf-table-view').style.display=v==='table'?'block':'none';
-  document.getElementById('sf-timeline-view').style.display=v==='timeline'?'block':'none';
-  document.getElementById('sf-btn-table').classList.toggle('active',v==='table');
-  document.getElementById('sf-btn-tl').classList.toggle('active',v==='timeline');
+  sfView = isMobile() ? 'timeline' : v;
+  const tableEl    = document.getElementById('sf-table-view');
+  const timelineEl = document.getElementById('sf-timeline-view');
+  if(isMobile()){
+    tableEl.style.display    = 'none';
+    timelineEl.style.display = 'block';
+    document.getElementById('sf-btn-table').classList.remove('active');
+    document.getElementById('sf-btn-tl').classList.add('active');
+  } else {
+    tableEl.style.display    = sfView==='table'   ? 'block' : 'none';
+    timelineEl.style.display = sfView==='timeline' ? 'block' : 'none';
+    document.getElementById('sf-btn-table').classList.toggle('active', sfView==='table');
+    document.getElementById('sf-btn-tl').classList.toggle('active',    sfView==='timeline');
+  }
   sfRender();
 }
+
+/* Re-evaluate layout on resize */
+window.addEventListener('resize', () => {
+  waSetView(waView);
+  sfSetView(sfView);
+});
 
 /* ── Format text ── */
 function fmt(t){ return t.replace(/\*(.*?)\*/g,'<strong>$1</strong>').replace(/_(.*?)_/g,'<em>$1</em>'); }
@@ -1563,8 +1580,9 @@ document.getElementById('sf-search').addEventListener('input',sfRender);
 populateDayFilters();
 updateWaProgress();
 updateSfProgress();
-waSetView('table');
-sfSetView('table');
+const startView = isMobile() ? 'timeline' : 'table';
+waSetView(startView);
+sfSetView(startView);
 </script>
 </body>
 </html>
