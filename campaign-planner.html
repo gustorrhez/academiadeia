@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaign Planner · Embudo Claude</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Playfair+Display:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   GLOBAL RESET & SHARED
+───────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body { font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* ─────────────────────────────────────────
+   SUPER HEADER (always visible)
+───────────────────────────────────────── */
+.super-header {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; align-items: stretch;
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2ddd5;
+  box-shadow: 0 1px 12px rgba(0,0,0,0.07);
+}
+
+.sh-brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 24px;
+  border-right: 1px solid #e2ddd5;
+  min-width: 200px;
+}
+
+.sh-brand-icon {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, #25a560, #1a7a45);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(37,165,96,0.25);
+}
+
+.sh-brand-text { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 15px; color: #1e2a22; letter-spacing: -0.3px; }
+.sh-brand-sub  { font-size: 9px; color: #7a8a80; font-family: 'DM Mono', monospace; letter-spacing: 0.8px; text-transform: uppercase; }
+
+/* Channel tabs */
+.sh-tabs { display: flex; align-items: stretch; flex: 1; }
+
+.sh-tab {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 28px;
+  border: none; background: transparent; cursor: pointer;
+  border-bottom: 3px solid transparent;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  color: #7a8a80;
+  transition: all 0.2s;
+  white-space: nowrap;
+  position: relative;
+}
+
+.sh-tab:hover { color: #1e2a22; background: rgba(0,0,0,0.02); }
+
+.sh-tab.active-wa {
+  color: #1a7a45;
+  border-bottom-color: #25a560;
+  font-weight: 600;
+}
+
+.sh-tab.active-sf {
+  color: #e8622a;
+  border-bottom-color: #e8622a;
+  font-weight: 600;
+}
+
+.sh-tab-icon { font-size: 16px; }
+
+.sh-tab-badge {
+  background: #f0ede6;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: #7a8a80;
+}
+
+.sh-tab.active-wa .sh-tab-badge { background: rgba(37,165,96,0.12); color: #1a7a45; }
+.sh-tab.active-sf .sh-tab-badge { background: rgba(232,98,42,0.12); color: #e8622a; }
+
+/* ─────────────────────────────────────────
+   CHANNEL PANELS
+───────────────────────────────────────── */
+.channel-panel { display: none; }
+.channel-panel.active { display: block; }
+
+/* ══════════════════════════════════════════
+   PANEL 1: WHATSAPP — light theme (green accent)
+══════════════════════════════════════════ */
+#panel-wa {
+  --bg: #f2f7f4;
+  --surface: #ffffff;
+  --surface2: #e8f2ec;
+  --border: #d4e8da;
+  --border-strong: #aacfb8;
+  --accent: #1a7a45;
+  --accent-bright: #25a560;
+  --accent-light: #eaf6ef;
+  --accent-mid: rgba(26,122,69,0.1);
+  --amber: #b06a10;
+  --amber-light: #fef3e2;
+  --blue: #1565a0;
+  --blue-light: #e8f0fb;
+  --purple: #7b3fa0;
+  --purple-light: #f5edfb;
+  --text: #1a2e22;
+  --text-muted: #5a7a64;
+  --text-dim: #a0baa8;
+
+  background: var(--bg);
+  color: var(--text);
+  min-height: calc(100vh - 56px);
+  position: relative;
+}
+
+#panel-wa::before {
+  content: '';
+  position: fixed; inset: 56px 0 0 0;
+  background-image: radial-gradient(circle, rgba(26,122,69,0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+/* WA toolbar */
+#panel-wa .p-toolbar {
+  position: sticky; top: 56px; z-index: 10;
+  padding: 13px 32px;
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: rgba(242,247,244,0.96);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+#panel-wa select,
+#panel-wa input[type="text"] {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  padding: 7px 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+}
+#panel-wa select:hover, #panel-wa input:hover { border-color: var(--border-strong); }
+#panel-wa select:focus, #panel-wa input:focus { border-color: var(--accent-bright); box-shadow: 0 0 0 3px var(--accent-mid); }
+
+/* WA Progress */
+#panel-wa .p-progress {
+  position: sticky; top: 56px; z-index: 9;
+  padding: 9px 32px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+#panel-wa .prog-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+#panel-wa .prog-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+
+/* WA main */
+#panel-wa .p-main { position: relative; z-index: 1; padding: 24px 32px; }
+
+/* WA table */
+#panel-wa .table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.03);
+  background: var(--surface);
+}
+#panel-wa table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#panel-wa thead { background: var(--surface2); position: sticky; top: 0; z-index: 4; }
+#panel-wa thead th {
+  padding: 12px 16px; text-align: left;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.2s;
+}
+#panel-wa thead th:hover { color: var(--accent); }
+#panel-wa tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+#panel-wa tbody tr:last-child { border-bottom: none; }
+#panel-wa tbody tr:hover { background: var(--accent-light); }
+#panel-wa tbody tr.done { opacity: 0.4; }
+#panel-wa tbody tr.done .fecha-dia,
+#panel-wa tbody tr.done .td-nombre,
+#panel-wa tbody tr.done .copy-preview { text-decoration: line-through; color: var(--text-dim); }
+#panel-wa td { padding: 12px 16px; vertical-align: middle; }
+
+/* WA badge */
+#panel-wa .fase-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+#panel-wa .fase-recordatorio { background: var(--blue-light); color: var(--blue); border: 1px solid rgba(21,101,160,0.2); }
+#panel-wa .fase-replay       { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(176,106,16,0.2); }
+#panel-wa .fase-venta        { background: var(--purple-light); color: var(--purple); border: 1px solid rgba(123,63,160,0.2); }
+
+/* WA datetime */
+#panel-wa .fecha-dia { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; color: var(--text); }
+#panel-wa .fecha-hora { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent-bright); margin-top: 2px; }
+#panel-wa .td-nombre { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--amber); white-space: nowrap; }
+#panel-wa .seg-etiqueta { font-size: 12px; color: var(--text); }
+#panel-wa .seg-estado { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+#panel-wa .copy-preview { font-size: 12px; color: var(--text-muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.5; max-width: 260px; }
+
+/* WA timeline */
+#panel-wa .timeline { display: none; }
+#panel-wa .timeline-day { margin-bottom: 32px; }
+#panel-wa .day-header { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+#panel-wa .day-title { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 24px; color: var(--text); }
+#panel-wa .day-count { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+#panel-wa .day-line  { flex: 1; height: 1px; background: var(--border); }
+#panel-wa .timeline-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+#panel-wa .tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.04); position: relative; overflow: hidden; }
+#panel-wa .tl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+#panel-wa .tl-card.recordatorio::before { background: var(--blue); }
+#panel-wa .tl-card.replay::before { background: var(--amber); }
+#panel-wa .tl-card.venta::before  { background: var(--purple); }
+#panel-wa .tl-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.09), 0 12px 32px rgba(0,0,0,0.05); transform: translateY(-2px); border-color: var(--border-strong); }
+#panel-wa .tl-card.done { opacity: 0.4; }
+#panel-wa .tl-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+#panel-wa .tl-hora { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; color: var(--text); line-height: 1; }
+#panel-wa .tl-nombre { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--amber); text-align: right; }
+#panel-wa .tl-segmento { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+#panel-wa .tl-objetivo { font-size: 12px; color: var(--text); line-height: 1.4; }
+
+/* WA modal */
+#panel-wa .modal-section-content { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--text); line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+#panel-wa .modal-section-content strong { color: var(--accent); }
+#panel-wa .modal-section-content em { color: var(--amber); font-style: normal; font-weight: 500; }
+#panel-wa .copy-btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; margin-top: 10px; }
+#panel-wa .copy-btn:hover { background: var(--accent-bright); }
+#panel-wa .copy-btn.copied { background: var(--text-muted); }
+
+/* ══════════════════════════════════════════
+   PANEL 2: SENDFLOW — light theme
+══════════════════════════════════════════ */
+#panel-sf {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --border: #e2ddd5;
+  --border-strong: #c8c2b8;
+  --accent: #e8622a;
+  --accent-light: #fff0eb;
+  --accent-mid: rgba(232,98,42,0.12);
+  --teal: #1a7a6e;
+  --teal-light: #e8f5f3;
+  --teal-mid: rgba(26,122,110,0.1);
+  --amber: #c47a1a;
+  --amber-light: #fef7e8;
+  --text: #1e2a22;
+  --text-muted: #7a8a80;
+  --text-dim: #b0bab5;
+
+  background: var(--bg);
+  color: var(--text);
+  min-height: calc(100vh - 56px);
+  position: relative;
+}
+
+#panel-sf::before {
+  content: '';
+  position: fixed; inset: 56px 0 0 0;
+  background-image: radial-gradient(circle, rgba(0,0,0,0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+/* SF toolbar */
+#panel-sf .p-toolbar {
+  position: sticky; top: 56px; z-index: 10;
+  padding: 13px 32px;
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: rgba(247,245,240,0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 0 var(--border);
+}
+
+#panel-sf select,
+#panel-sf input[type="text"] {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  padding: 7px 12px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+}
+#panel-sf select:focus, #panel-sf input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-mid); }
+
+/* SF Progress */
+#panel-sf .p-progress {
+  position: sticky; top: 56px; z-index: 9;
+  padding: 9px 32px;
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+#panel-sf .prog-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border); }
+#panel-sf .prog-fill  { height: 100%; background: linear-gradient(90deg, var(--teal), var(--accent)); border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+
+/* SF main */
+#panel-sf .p-main { position: relative; z-index: 1; padding: 24px 32px; }
+
+/* SF table */
+#panel-sf .table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  background: var(--surface);
+}
+#panel-sf table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#panel-sf thead { background: var(--surface2); position: sticky; top: 0; z-index: 4; }
+#panel-sf thead th {
+  padding: 12px 16px; text-align: left;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--text-muted); border-bottom: 1px solid var(--border);
+  white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.2s;
+}
+#panel-sf thead th:hover { color: var(--accent); }
+#panel-sf tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+#panel-sf tbody tr:last-child { border-bottom: none; }
+#panel-sf tbody tr:hover { background: #fdf9f6; }
+#panel-sf tbody tr.done { opacity: 0.4; }
+#panel-sf tbody tr.done .fecha-dia,
+#panel-sf tbody tr.done .td-nombre,
+#panel-sf tbody tr.done .msg-preview { text-decoration: line-through; color: var(--text-dim); }
+#panel-sf td { padding: 12px 16px; vertical-align: middle; }
+
+/* SF badge */
+#panel-sf .fase-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+#panel-sf .fase-recordatorio { background: var(--teal-light); color: var(--teal); border: 1px solid rgba(26,122,110,0.2); }
+#panel-sf .fase-expectativa  { background: var(--amber-light); color: var(--amber); border: 1px solid rgba(196,122,26,0.2); }
+#panel-sf .fase-evento       { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(232,98,42,0.2); }
+#panel-sf .fase-venta        { background: #fdf0f8; color: #b0368a; border: 1px solid rgba(176,54,138,0.2); }
+
+#panel-sf .fecha-dia { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 14px; color: var(--text); }
+#panel-sf .fecha-hora { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
+#panel-sf .td-nombre { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--amber); white-space: nowrap; }
+#panel-sf .msg-preview { font-size: 12px; color: var(--text-muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.5; max-width: 280px; }
+
+.link-pill { display: inline-flex; align-items: center; gap: 5px; background: #e8f5f3; border: 1px solid rgba(26,122,110,0.2); color: #1a7a6e; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-family: 'DM Mono', monospace; text-decoration: none; transition: all 0.2s; white-space: nowrap; }
+.link-pill:hover { background: #1a7a6e; color: #fff; }
+.link-pill.none { background: #f0ede6; border-color: #e2ddd5; color: #b0bab5; cursor: default; }
+.recurso-badge { display: inline-flex; align-items: center; gap: 4px; background: #fef7e8; border: 1px solid rgba(196,122,26,0.2); color: #c47a1a; border-radius: 6px; padding: 3px 9px; font-size: 11px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+
+/* SF timeline */
+#panel-sf .timeline { display: none; }
+#panel-sf .timeline-day { margin-bottom: 32px; }
+#panel-sf .day-header { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+#panel-sf .day-title { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 24px; color: var(--text); }
+#panel-sf .day-count { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text-muted); }
+#panel-sf .day-line  { flex: 1; height: 1px; background: var(--border); }
+#panel-sf .timeline-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px; }
+#panel-sf .tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+#panel-sf .tl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+#panel-sf .tl-card.recordatorio::before { background: #1a7a6e; }
+#panel-sf .tl-card.expectativa::before  { background: #c47a1a; }
+#panel-sf .tl-card.evento::before       { background: var(--accent); }
+#panel-sf .tl-card.venta::before        { background: #b0368a; }
+#panel-sf .tl-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 12px 32px rgba(0,0,0,0.06); transform: translateY(-2px); border-color: var(--border-strong); }
+#panel-sf .tl-card.done { opacity: 0.4; }
+#panel-sf .tl-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+#panel-sf .tl-hora { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 22px; color: var(--text); line-height: 1; }
+#panel-sf .tl-nombre { font-family: 'DM Mono', monospace; font-size: 11px; color: #c47a1a; text-align: right; }
+#panel-sf .tl-objetivo { font-size: 12px; color: var(--text); margin-top: 6px; line-height: 1.4; }
+
+/* SF modal content */
+#panel-sf .modal-section-content { background: #f7f5f0; border: 1px solid #e2ddd5; border-radius: 8px; padding: 14px; font-size: 13px; color: #1e2a22; line-height: 1.75; white-space: pre-wrap; word-break: break-word; }
+#panel-sf .modal-section-content strong { color: #e8622a; }
+#panel-sf .modal-section-content em { color: #1a7a6e; font-style: normal; font-weight: 500; }
+#panel-sf .copy-btn { background: #e8622a; color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; margin-top: 10px; }
+#panel-sf .copy-btn:hover { background: #d4541e; }
+#panel-sf .copy-btn.copied { background: #1a7a6e; }
+.modal-link { display: inline-flex; align-items: center; gap: 6px; color: #1a7a6e; text-decoration: none; font-family: 'DM Mono', monospace; font-size: 12px; background: #e8f5f3; border: 1px solid rgba(26,122,110,0.2); border-radius: 8px; padding: 10px 14px; transition: all 0.2s; word-break: break-all; }
+.modal-link:hover { background: #1a7a6e; color: #fff; }
+
+/* ─────────────────────────────────────────
+   SHARED COMPONENTS
+───────────────────────────────────────── */
+
+/* Check button — adapts per panel */
+.btn-check {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: all 0.2s; flex-shrink: 0; color: transparent;
+}
+
+#panel-wa .btn-check { border-color: #aacfb8; }
+#panel-wa .btn-check:hover { border-color: #1a7a45; background: #eaf6ef; }
+#panel-wa .btn-check.checked { background: #1a7a45; border-color: #1a7a45; color: #fff; box-shadow: 0 2px 8px rgba(26,122,69,0.3); }
+
+#panel-sf .btn-check { border-color: #c8c2b8; }
+#panel-sf .btn-check:hover { border-color: #1a7a6e; background: #e8f5f3; }
+#panel-sf .btn-check.checked { background: #1a7a6e; border-color: #1a7a6e; color: #fff; box-shadow: 0 2px 8px rgba(26,122,110,0.3); }
+
+/* Shared toolbar buttons */
+.p-btn {
+  border-radius: 8px; padding: 7px 13px; font-size: 12px;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Mono', monospace; white-space: nowrap; border: 1px solid;
+}
+
+#panel-wa .p-btn { background: #fff; border-color: #d4e8da; color: #5a7a64; }
+#panel-wa .p-btn:hover { border-color: #aacfb8; color: #1a2e22; }
+#panel-wa .p-btn-danger { color: #c0392b; border-color: rgba(192,57,43,0.25); }
+#panel-wa .p-btn-danger:hover { background: #fff5f5; border-color: #c0392b; }
+
+#panel-sf .p-btn { background: #fff; border-color: #e2ddd5; color: #7a8a80; }
+#panel-sf .p-btn:hover { border-color: #c8c2b8; color: #1e2a22; }
+#panel-sf .p-btn-danger { color: #c0392b; border-color: rgba(192,57,43,0.25); }
+#panel-sf .p-btn-danger:hover { background: #fff5f5; border-color: #c0392b; }
+
+.filter-label { font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+#panel-wa .filter-label { color: #5a7a64; }
+#panel-sf .filter-label { color: #7a8a80; }
+
+.prog-label { font-size: 11px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+#panel-wa .prog-label { color: #5a7a64; }
+#panel-wa .prog-label strong { color: #1a7a45; }
+#panel-sf .prog-label { color: #7a8a80; }
+#panel-sf .prog-label strong { color: #e8622a; }
+
+.view-toggle { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid; margin-left: auto; }
+#panel-wa .view-toggle { background: #e8f2ec; border-color: #d4e8da; }
+#panel-sf .view-toggle { background: #f0ede6; border-color: #e2ddd5; }
+
+.view-btn { padding: 7px 14px; font-size: 12px; cursor: pointer; background: transparent; border: none; transition: all 0.2s; font-family: 'DM Mono', monospace; }
+#panel-wa .view-btn { color: #5a7a64; }
+#panel-wa .view-btn.active { background: #1a7a45; color: #fff; font-weight: 500; }
+#panel-sf .view-btn { color: #7a8a80; }
+#panel-sf .view-btn.active { background: #e8622a; color: #fff; font-weight: 500; }
+
+.btn-eye { background: none; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; white-space: nowrap; border: 1px solid; }
+#panel-wa .btn-eye { border-color: #d4e8da; color: #5a7a64; }
+#panel-wa .btn-eye:hover { border-color: #1a7a45; color: #1a7a45; }
+#panel-sf .btn-eye { border-color: #e2ddd5; color: #7a8a80; }
+#panel-sf .btn-eye:hover { border-color: #e8622a; color: #e8622a; }
+
+.count-bar { padding: 8px 32px; font-size: 12px; font-family: 'DM Mono', monospace; border-bottom: 1px solid; display: flex; align-items: center; gap: 12px; }
+#panel-wa .count-bar { color: #5a7a64; border-color: #d4e8da; background: #fff; }
+#panel-wa .count-bar strong { color: #1a7a45; }
+#panel-sf .count-bar { color: #7a8a80; border-color: #e2ddd5; background: #fff; }
+#panel-sf .count-bar strong { color: #e8622a; }
+
+.empty-state { text-align: center; padding: 80px 20px; }
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.empty-state p { font-family: 'DM Mono', monospace; font-size: 13px; }
+#panel-wa .empty-state { color: #5a7a64; }
+#panel-sf .empty-state { color: #7a8a80; }
+
+/* ─────────────────────────────────────────
+   SHARED MODAL
+───────────────────────────────────────── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+  z-index: 300; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  width: 100%; max-width: 680px; max-height: 87vh;
+  overflow-y: auto; position: relative;
+  border-radius: 14px; border: 1px solid;
+}
+
+#modal-wa { background: #ffffff; border-color: #d4e8da; box-shadow: 0 24px 80px rgba(0,0,0,0.15); }
+#modal-sf { background: #ffffff; border-color: #e2ddd5; box-shadow: 0 24px 80px rgba(0,0,0,0.2); }
+
+.modal-header {
+  padding: 22px 24px 16px; border-bottom: 1px solid;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  position: sticky; top: 0; z-index: 2;
+}
+#modal-wa .modal-header { background: #ffffff; border-color: #d4e8da; }
+#modal-sf .modal-header { background: #ffffff; border-color: #e2ddd5; }
+
+.modal-title { font-weight: 800; font-size: 20px; }
+#modal-wa .modal-title { font-family: 'Playfair Display', serif; color: #1a2e22; }
+#modal-sf .modal-title { font-family: 'Playfair Display', serif; color: #1e2a22; }
+
+.modal-meta { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+.btn-close {
+  border-radius: 8px; width: 32px; height: 32px;
+  cursor: pointer; font-size: 16px; transition: all 0.2s; flex-shrink: 0; border: 1px solid;
+}
+#modal-wa .btn-close { background: #e8f2ec; border-color: #d4e8da; color: #5a7a64; }
+#modal-wa .btn-close:hover { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+#modal-sf .btn-close { background: #f0ede6; border-color: #e2ddd5; color: #7a8a80; }
+#modal-sf .btn-close:hover { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+
+.modal-body { padding: 20px 24px 28px; }
+.modal-section { margin-bottom: 18px; }
+.modal-section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+#modal-wa .modal-section-label { color: #5a7a64; }
+#modal-sf .modal-section-label { color: #7a8a80; }
+</style>
+</head>
+<body>
+
+<!-- ══ SUPER HEADER ══ -->
+<div class="super-header">
+  <div class="sh-brand">
+    <div class="sh-brand-icon">🚀</div>
+    <div>
+      <div class="sh-brand-text">Campaign Planner</div>
+      <div class="sh-brand-sub">Embudo Claude · 26/03</div>
+    </div>
+  </div>
+  <div class="sh-tabs">
+    <button class="sh-tab active-wa" id="shtab-wa" onclick="switchChannel('wa')">
+      <span class="sh-tab-icon">💬</span>
+      WhatsApp Difusiones
+      <span class="sh-tab-badge" id="wa-badge">0/0</span>
+    </button>
+    <button class="sh-tab" id="shtab-sf" onclick="switchChannel('sf')">
+      <span class="sh-tab-icon">📤</span>
+      Sendflow · Grupo
+      <span class="sh-tab-badge" id="sf-badge">0/0</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL WA
+══════════════════════════════════════════ -->
+<div id="panel-wa" class="channel-panel active">
+
+  <!-- Progress -->
+  <div class="p-progress" id="wa-progress-bar-wrap" style="position:sticky;top:56px;z-index:10">
+    <span class="prog-label">Progreso</span>
+    <div class="prog-track"><div class="prog-fill" id="wa-prog-fill" style="width:0%"></div></div>
+    <span class="prog-label"><strong id="wa-done">0</strong>/<span id="wa-total">0</span></span>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="p-toolbar">
+    <span class="filter-label">Fase</span>
+    <select id="wa-filter-fase">
+      <option value="">Todas</option>
+      <option>Recordatorio</option><option>Replay</option><option>Venta</option>
+    </select>
+    <span class="filter-label">Día</span>
+    <select id="wa-filter-dia"><option value="">Todos</option></select>
+    <input type="text" id="wa-search" placeholder="Buscar…" style="width:200px">
+    <button class="p-btn" onclick="waClearFilters()">✕ Limpiar</button>
+    <button class="p-btn p-btn-danger" onclick="waReset()">🔄 Reset</button>
+    <div class="view-toggle">
+      <button class="view-btn active" id="wa-btn-table" onclick="waSetView('table')">Tabla</button>
+      <button class="view-btn" id="wa-btn-tl" onclick="waSetView('timeline')">Timeline</button>
+    </div>
+  </div>
+
+  <div class="count-bar">
+    Mostrando <strong id="wa-showing">0</strong> mensajes
+    <span id="wa-filter-summary"></span>
+  </div>
+
+  <div class="p-main">
+    <div id="wa-table-view">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="cursor:default;width:40px"></th>
+            <th onclick="waSortBy('fase')">FASE</th>
+            <th onclick="waSortBy('dia')">FECHA &amp; HORA</th>
+            <th onclick="waSortBy('segmento')">SEGMENTO</th>
+            <th onclick="waSortBy('nombre')">ID MENSAJE</th>
+            <th>OBJETIVO</th>
+            <th>COPY (preview)</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="wa-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="wa-timeline-view" class="timeline"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL SF
+══════════════════════════════════════════ -->
+<div id="panel-sf" class="channel-panel">
+
+  <!-- Progress -->
+  <div class="p-progress" style="position:sticky;top:56px;z-index:10">
+    <span class="prog-label">Progreso</span>
+    <div class="prog-track"><div class="prog-fill" id="sf-prog-fill" style="width:0%"></div></div>
+    <span class="prog-label"><strong id="sf-done">0</strong>/<span id="sf-total">0</span></span>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="p-toolbar">
+    <span class="filter-label">Fase</span>
+    <select id="sf-filter-fase">
+      <option value="">Todas</option>
+      <option>Recordatorio</option><option>Expectativa</option><option>Evento</option><option>Venta</option>
+    </select>
+    <span class="filter-label">Día</span>
+    <select id="sf-filter-dia"><option value="">Todos</option></select>
+    <input type="text" id="sf-search" placeholder="Buscar…" style="width:200px">
+    <button class="p-btn" onclick="sfClearFilters()">✕ Limpiar</button>
+    <button class="p-btn p-btn-danger" onclick="sfReset()">🔄 Reset</button>
+    <div class="view-toggle">
+      <button class="view-btn active" id="sf-btn-table" onclick="sfSetView('table')">Tabla</button>
+      <button class="view-btn" id="sf-btn-tl" onclick="sfSetView('timeline')">Timeline</button>
+    </div>
+  </div>
+
+  <div class="count-bar">
+    Mostrando <strong id="sf-showing">0</strong> mensajes
+    <span id="sf-filter-summary"></span>
+  </div>
+
+  <div class="p-main">
+    <div id="sf-table-view">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="cursor:default;width:40px"></th>
+            <th onclick="sfSortBy('fase')">FASE</th>
+            <th onclick="sfSortBy('dia')">FECHA &amp; HORA</th>
+            <th onclick="sfSortBy('nombre')">ID MENSAJE</th>
+            <th>OBJETIVO</th>
+            <th>RECURSO</th>
+            <th>MENSAJE (preview)</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="sf-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="sf-timeline-view" class="timeline"></div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div class="modal-overlay" id="modal-wa-overlay" onclick="closeModal('wa',event)">
+  <div class="modal" id="modal-wa">
+    <div class="modal-header">
+      <div><div class="modal-title" id="mwa-title"></div><div class="modal-meta" id="mwa-meta"></div></div>
+      <button class="btn-close" onclick="closeModalDirect('wa')">✕</button>
+    </div>
+    <div class="modal-body" id="mwa-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-sf-overlay" onclick="closeModal('sf',event)">
+  <div class="modal" id="modal-sf">
+    <div class="modal-header">
+      <div><div class="modal-title" id="msf-title"></div><div class="modal-meta" id="msf-meta"></div></div>
+      <button class="btn-close" onclick="closeModalDirect('sf')">✕</button>
+    </div>
+    <div class="modal-body" id="msf-body"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA — WHATSAPP
+══════════════════════════════════════ */
+const WA_DATA = [
+  { fase:"Recordatorio", dia:"Martes", hora:"11:00 am", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_01", objetivo:"Recordar que el taller es mañana", recurso:"Video",
+    copy:`{name}, *mañana vamos a hacer algo que casi nadie está mostrando todavía*…\n\nEn la clase gratuita _*"Claude para Profesionales"*_ verás cómo una IA puede analizar datos reales, encontrar conclusiones estratégicas y crear archivos profesionales en minutos.\n\nEn vivo vas a descubrir:\n*Por qué Claude está superando a otras IAs en análisis profesional*\n*Cómo analizar un Excel complejo sin fórmulas ni código*\n*Cómo generar reportes y presentaciones listas para usar*\n\nMañana a las 9:00 a.m. (hora CDMX)\nZoom: https://us06web.zoom.us/j/81941368353`, botones:"- No más mensajes" },
+  { fase:"Recordatorio", dia:"Miércoles", hora:"7:00 am", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_02", objetivo:"Aumentar la asistencia y emoción", recurso:"",
+    copy:`¡{name}, hoy es el día!\n\n*En unas horas comienza la clase gratuita "Claude para Profesionales"*\n\nEntra aquí por Zoom:\nhttps://us06web.zoom.us/j/81941368353\n\n*Una demostración real usando un archivo de Excel*\n*Cómo detectar información clave dentro de grandes volúmenes de datos*\n*Cómo transformar ese análisis en una presentación ejecutiva*`, botones:"- No más mensajes" },
+  { fase:"Recordatorio", dia:"Miércoles", hora:"9:00 am", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_03", objetivo:"Notificar inicio en vivo", recurso:"",
+    copy:`{name}, *ya estamos en vivo*\n\nLa clase gratuita "Claude para Profesionales" acaba de comenzar.\n\nEntra ahora:\nhttps://us06web.zoom.us/j/81941368353\n\n_Hoy vas a ver algo clave: Claude ya no es solo un chat que responde preguntas_\n*Ahora puede conectarse con programas y datos de trabajo y operar desde dentro*`, botones:"" },
+  { fase:"Replay", dia:"Miércoles", hora:"1:00 pm", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_04", objetivo:"Validar si la persona asistió", recurso:"",
+    copy:`{name}, *lo de hoy estuvo increíble*…\n\nEn la clase, Eduardo mostró algo que casi nadie explica bien todavía: qué pasa cuando comparas Claude con otras IAs como ChatGPT o Gemini en trabajo profesional real.\n\n¿Pudiste ver la clase o quieres que te envíe el enlace para verla?`, botones:"" },
+  { fase:"Venta", dia:"Jueves", hora:"2:00 pm", segmento:"Campaña Taller · Curioso en Curso (pago)", nombre:"2603_CLA_05", objetivo:"Despertar interés en el curso", recurso:"",
+    copy:`{name}, si trabajas con datos, documentos o decisiones importantes, ya tienes el terreno perfecto para aprovechar la IA… *solo falta aprender a usarla correctamente*\n\n*En Domina Claude vas a descubrir cómo convertir esta IA en tu aliada*\n\n*¿Quieres que te muestre cómo está estructurado el programa?*`, botones:"" },
+  { fase:"Venta", dia:"Viernes", hora:"11:00 am", segmento:"Campaña Taller · Interesado en Curso (pago)", nombre:"2603_CLA_06", objetivo:"Presentar oferta con precio especial", recurso:"",
+    copy:`¡Qué gusto, {name}! *Me alegra saber que quieres descubrir todo lo que puedes lograr usando Claude*\n\n_Con Domina Claude aprenderás paso a paso a analizar documentos y datos complejos_\n\n*Hoy con precio especial de solo $197 USD*\n\n*¿Quieres que te envíe el link para inscribirte?*`, botones:"" },
+  { fase:"Venta", dia:"Sábado", hora:"4:00 pm", segmento:"Campaña Taller · Objeción", nombre:"2603_CLA_07", objetivo:"Descubrir objeción real", recurso:"",
+    copy:`{NOMBRE}\n\nAntes de que descartes la idea… déjame preguntarte algo con total honestidad:\n\n*¿Qué es lo que hoy realmente te está frenando para entrar a Domina Claude?*\n\n_Cuéntame cuál es la barrera real_`, botones:"" },
+  { fase:"Venta", dia:"Sábado", hora:"5:00 pm", segmento:"Campaña Taller · Carrito Abandonado", nombre:"2603_CLA_08", objetivo:"Recuperar carrito abandonado", recurso:"",
+    copy:`Hola NOMBRE\n\n*Vi que estuviste a punto de completar tu inscripción a Domina Claude, pero el proceso no se terminó*\n\n*¿Te surgió alguna duda o algo te hizo pausarlo?*`, botones:"" },
+  { fase:"Venta", dia:"Sábado", hora:"5:10 pm", segmento:"Campaña Taller · Pago Rechazado", nombre:"2603_CLA_09", objetivo:"Ayudar con pago rechazado", recurso:"",
+    copy:`Hola NOMBRE, antes manifestaste interés en inscribirte pero vi en el sistema que aún no has logrado hacerlo.\n\n*¿Hay algo en lo que te pueda ayudar y lo revisamos juntos?*`, botones:"" },
+  { fase:"Venta", dia:"Sábado", hora:"5:15 pm", segmento:"Campaña Taller · Boleto generado", nombre:"2603_CLA_10", objetivo:"Recordar vencimiento de boleto", recurso:"",
+    copy:`Hola NOMBRE, vi en el sistema que generaste tu boleto para el pago en efectivo ¡Qué bien!\n\nRecuerda que solo tienes 2 días para realizar el pago antes de que se venza...\n\n🙂👉 *¿Necesitas ayuda con el proceso de pago?*`, botones:"" },
+  { fase:"Venta", dia:"Sábado", hora:"6:00 pm", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_11", objetivo:"Detectar objeciones y mantener conversación", recurso:"",
+    copy:`{name}, *¿te quedó alguna duda después de la clase?*\n\n*Estoy aquí para ayudarte a resolver cualquier cosa que te esté frenando antes de dar el siguiente paso*`, botones:"- Quiero unirme\n- Tengo dudas\n- No más mensajes" },
+  { fase:"Venta", dia:"Domingo", hora:"2:00 pm", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_12", objetivo:"Abrir conversación para venta del curso", recurso:"",
+    copy:`*Lo que viste en la clase es solo el comienzo*…\n\n{name}, _si ya te llamó la atención lo que Claude puede hacer en tareas reales de trabajo,_\n\n*Quedan pocos lugares y las inscripciones cierran mañana a las 6 PM*`, botones:"- Quiero unirme\n- Tengo dudas\n- No más mensajes" },
+  { fase:"Venta", dia:"Lunes", hora:"1:00 pm", segmento:"Campaña Taller · Registrados e Interacción Taller (GRATIS)", nombre:"2603_CLA_13_v2", objetivo:"Último llamado con urgencia real", recurso:"",
+    copy:`*Último llamado, {name} hoy cerramos inscripciones*\n\nDomina Claude comienza hoy y es la última oportunidad para entrar al entrenamiento.\n\n*Serán 4 días en vivo, con ejercicios guiados y demostraciones reales*`, botones:"- Quiero unirme\n- No más mensajes" },
+  { fase:"Venta", dia:"Lunes", hora:"3:00 pm", segmento:"Campaña Taller · Interesado en Curso (pago)", nombre:"2603_CLA_14", objetivo:"Manejar objeciones de tiempo e inversión", recurso:"",
+    copy:`{name}, sé que a veces surgen dudas antes de dar el paso: el tiempo, la inversión o pensar que la tecnología puede ser complicada… y es totalmente normal.\n\n*¿Quieres contarme qué es eso que te detiene y lo vemos juntos?*`, botones:"" },
+  { fase:"Venta", dia:"Lunes", hora:"3:30 pm", segmento:"Campaña Taller · Objeción", nombre:"2603_CLA_15", objetivo:"Cierre con urgencia — último día", recurso:"",
+    copy:`{name}, *¡hoy cerramos inscripciones a Domina Claude!*\n\nNo quiero que te quedes fuera. Cuéntame:\n\n*¿Qué es lo que te está frenando?*`, botones:"" },
+  { fase:"Venta", dia:"Lunes", hora:"4:00 pm", segmento:"Campaña Taller · Carrito Abandonado", nombre:"2603_CLA_16", objetivo:"Recuperar carrito — cierre hoy", recurso:"",
+    copy:`Hola NOMBRE, ¡Las inscripciones a Domina Claude cierran hoy!\n\nCuéntame, *¿Hay algo en lo que pueda ayudarte para que no te quedes fuera?*`, botones:"" },
+  { fase:"Venta", dia:"Lunes", hora:"4:30 pm", segmento:"Campaña Taller · Pago Rechazado", nombre:"2603_CLA_17", objetivo:"Resolver pago rechazado — cierre hoy", recurso:"",
+    copy:`Hola NOMBRE, ¡Las inscripciones a Domina Claude cierran hoy!\n\nCuéntame, *¿Hay algo en lo que pueda ayudarte para que no te quedes fuera?*`, botones:"" },
+  { fase:"Venta", dia:"Lunes", hora:"5:00 pm", segmento:"Campaña Taller · Boleto generado", nombre:"2603_CLA_18", objetivo:"Urgencia — último día boleto", recurso:"",
+    copy:`Hola {name}, *hoy cerramos inscripciones a Domina Claude*\n\nEs el último día para asegurar tu lugar y acceder al precio especial del lanzamiento.\n\n*Después de hoy se cierran los accesos*`, botones:"" },
+  { fase:"Venta", dia:"Lunes", hora:"5:30 pm", segmento:"Campaña Taller · Curioso en Curso (pago)", nombre:"2603_CLA_19", objetivo:"Presentar estructura del programa", recurso:"",
+    copy:`{name}, este entrenamiento fue creado para enseñarte a usar Claude como un verdadero aliado en tu trabajo.\n\n*¿Quieres que te muestre lo que aprenderás en cada día de Domina Claude para ver si es justo lo que necesitas?*`, botones:"" }
+];
+
+/* ══════════════════════════════════════
+   DATA — SENDFLOW
+══════════════════════════════════════ */
+const SF_DATA = [
+  { fase:"Recordatorio", dia:"—", hora:"—", nombre:"MSG-00", objetivo:"Descripción de bienvenida a la comunidad", recurso:"", link:"",
+    mensaje:`¡Hola, hola! Qué alegría tenerte por aquí 🎉
+
+*Este grupo es exclusivo para los participantes de la clase gratuita*
+*"Claude para Profesionales: Cómo lograr análisis y resultados estratégicos que ninguna otra IA te da"* 🤖✨
+
+Nos vemos este miércoles 18 de marzo
+
+Horarios:
+📍 09:00 Ciudad de México
+📍 10:00 Colombia
+📍 11:00 Miami
+📍 12:00 Argentina
+
+_*Acceso directo al Zoom*_ → ENLACE
+
+Si en algún momento necesitas ayuda, escríbenos por WhatsApp a este número: NÚMERO
+(Guárdalo para no perder el contacto 😊)
+
+*Evita hacer llamadas a los administradores.* *Solo mensajes, ¿vale?*
+
+Si compraste algún curso o necesitas soporte adicional, puedes escribir a:
+info@academiadeia.com
+
+Nos vemos muy pronto en la clase… _prepárate porque verás cómo Claude analiza datos reales, genera conclusiones estratégicas y crea entregables profesionales en minutos,_ usando un método simple que podrás aplicar desde el día siguiente.` },
+
+  { fase:"Expectativa", dia:"Lunes", hora:"9:00 AM", nombre:"MSG-01 · Bienvenida", objetivo:"Bienvenida al grupo", recurso:"", link:"",
+    mensaje:`*Esto no es otro grupo más sobre "trucos de IA"*…
+
+Hola 👋
+
+_Desde ahora formas parte del grupo que asistirá a la clase gratuita_
+"Claude para Profesionales".
+
+Si ya probaste inteligencia artificial y sentiste que las respuestas eran bonitas… pero demasiado genéricas para tu trabajo, no eres el único.
+
+A la mayoría le pasa lo mismo. No porque la IA no sirva…
+sino porque nadie les enseñó cómo usarla con método.
+
+En esta clase no vas a ver teoría ni prompts virales.
+Vas a ver algo mucho más útil:
+
+✔ *Cómo Claude analiza un documento o un Excel real*
+✔ *Cómo encuentra patrones y genera conclusiones claras*
+✔ *Cómo crea entregables profesionales listos para presentar*
+
+Todo en vivo y paso a paso.
+
+Porque la diferencia entre "probar la IA" y trabajar con IA de verdad es ver cómo se hace.
+
+Si estás listo para descubrir lo que realmente puede hacer Claude en manos de un profesional, reacciona con 🙋 y nos vemos en la clase` },
+
+  { fase:"Expectativa", dia:"Lunes", hora:"5:00 PM", nombre:"MSG-02 · Reconocimiento de dolores", objetivo:"Que las personas reconozcan algunos dolores", recurso:"Video", link:"",
+    mensaje:`Hola... Déjame preguntarte algo rápido.
+
+¿Cuántas veces has abierto Excel…
+ves una tabla llena de números…
+y sabes que ahí hay algo importante?
+
+Patrones, tendencias, decisiones…
+Pero encontrarlo te toma una eternidad.
+
+Revisar datos, ordenar columnas, cruzar información…
+y al final terminas pasando horas intentando entender qué está pasando realmente.
+
+Mira, esto es mucho más común de lo que parece.
+
+Por eso te dejé un pequeño reto en el grupo.
+Instalar Claude dentro de Excel.
+
+Y aquí es donde pasa algo bien interesante.
+Claude ya no está trabajando con ejemplos inventados. Está viendo tus datos reales.
+
+Y cuando eso sucede, cambia completamente la conversación.
+
+Porque ahora puedes pedirle cosas como:
+📊 Analiza esta hoja
+🔍 Encuentra patrones
+⚠️ Detecta anomalías
+O incluso: ¿qué decisiones tomaría alguien que analiza estos números todos los días?
+
+Ese momento en el que lees la respuesta…
+es cuando la mayoría dice:
+_"Ah… ahora entiendo por qué esta herramienta es distinta."_
+
+Si todavía no hiciste el reto, hazlo hoy.
+Te va a tomar literalmente tres minutos.
+
+Y cuando entres a la clase, ya vas a tener clarísimo por qué esto puede cambiar la forma en la que trabajas con datos.
+
+Nos vemos en el taller.
+
+---
+
+Tengo un mini-reto para ti que te va a preparar muy bien para la clase.
+
+Mientras llega nuestro taller "Claude para Profesionales", quiero proponerte una tarea rápida que te ayudará a entender el verdadero potencial de esta herramienta.
+
+_*Power Move #1: Claude dentro de tu Excel*_
+
+Tu misión es instalar el add-in de Claude en Excel. Solo toma unos minutos y te permitirá ver cómo la IA puede analizar datos reales directamente en tu hoja.
+
+Tu tarea:
+1️⃣ *Abre Excel Web o Excel Desktop*
+2️⃣ *Ve a Add-ins / Complementos y busca "Claude by Anthropic"*
+3️⃣ *Instálalo y abre el panel lateral*
+4️⃣ *Inicia sesión con tu cuenta de Claude*
+
+Luego abre cualquier tabla de datos que tengas (ventas, gastos, presupuesto, lo que sea) y pídele algo como:
+_"Analiza esta hoja y dime qué patrones ves y qué 3 decisiones tomaría un CFO con estos números"_
+
+La idea es que llegues al taller habiendo visto por ti mismo lo que Claude puede hacer con datos reales, no solo con ejemplos.
+
+Reacciona con ✅ cuando ya lo tengas instalado y si no la logras no te preocupes en la clase podrás ver cómo usar Claude con Excel.` },
+
+  { fase:"Expectativa", dia:"Martes", hora:"9:00 AM", nombre:"MSG-03 · Encuesta", objetivo:"Prueba social — encuesta de nivel", recurso:"Encuesta", link:"",
+    mensaje:`*Quiero adaptar mejor la clase a lo que tú necesitas* …
+
+Antes del webinar, cuéntame algo rápido:
+_¿Qué tan familiarizado estás hoy con la inteligencia artificial para tu trabajo o negocio?_
+
+Opciones:
+🔵 *Sé que la IA existe, pero no tengo claro cómo usarla en mi trabajo*
+🟡 *He probado herramientas como ChatGPT u otras, pero los resultados me parecen muy genéricos*
+🟠 *Uso herramientas digitales en mi trabajo, pero nunca he usado IA para analizar información o crear entregables*
+🟢 *Ya he probado la IA algunas veces y quiero aprender a usarla de forma más profesional*
+🔴 *Me siento bastante perdido… hay demasiadas herramientas y no sé por dónde empezar*
+
+_Respóndeme con el emoji que más se parezca a tu situación_ 👆
+
+Así podré enfocarme en mostrar los ejemplos que más te ayuden durante la clase.` },
+
+  { fase:"Expectativa", dia:"Martes", hora:"1:00 PM", nombre:"MSG-04 · Explicar la herramienta", objetivo:"Explicar la herramienta y por qué Claude es diferente", recurso:"", link:"",
+    mensaje:`*Hoy uso Claude en cerca del 60% de mis tareas de trabajo* … y te cuento por qué.
+
+Durante mucho tiempo usé herramientas como ChatGPT para tareas rápidas. Pero cuando necesitaba análisis de verdad o conclusiones útiles, *las respuestas solían ser demasiado genéricas*
+
+Ahí fue cuando empecé a usar Claude, y entendí la diferencia.
+
+Con esta IA puedes:
+✅ Analizar una hoja de Excel completa y detectar patrones en minutos.
+✅ Convertir documentos complejos en reportes o presentaciones profesionales.
+✅ Pedirle que piense como un analista y te entregue conclusiones claras basadas en tus datos.
+
+En pocas palabras… es como tener un analista trabajando contigo 24/7, ayudándote a ordenar información y convertir datos en decisiones.
+
+Y lo mejor: *no necesitas saber de programación ni de tecnología avanzada, solo entender cómo usar la herramienta correctamente*
+
+Entonces prepárate, porque en el taller _te voy a mostrar ejemplos reales de cómo usar Claude para analizar información y generar entregables profesionales, incluso si hoy estás empezando desde cero_` },
+
+  { fase:"Expectativa", dia:"Martes", hora:"5:00 PM", nombre:"MSG-05 · Agendar hora", objetivo:"Agendar la hora de la clase", recurso:"Imagen agenda", link:"https://www.addevent.com/event/ppdpc4m2bwpd",
+    mensaje:`*¿Listo para ver algo que puede cambiar cómo trabajas con la IA?* 🚀
+
+Mañana es nuestra clase gratuita:
+_"Claude para Profesionales: Cómo lograr análisis y resultados estratégicos con IA"_
+
+En esta sesión vas a ver una demostración en vivo donde Claude analiza datos reales, encuentra conclusiones estratégicas y genera entregables profesionales en minutos, sin que tengas que programar ni ser técnico.
+
+*Guarda el horario aquí* 📅: https://www.addevent.com/event/ppdpc4m2bwpd
+
+*MAÑANA*
+⏰ 09:00 Ciudad de México
+⏰ 10:00 Colombia
+⏰ 11:00 Miami
+⏰ 12:00 Argentina
+
+(El enlace de acceso llegará por este mismo grupo antes de la clase)
+
+☕✍ Te recomiendo guardar la hora y entrar puntual… porque la primera demostración suele ser el momento donde todos dicen:
+_*"No sabía que una IA podía hacer eso"*_` },
+
+  { fase:"Expectativa", dia:"Miércoles", hora:"8:00 AM", nombre:"MSG-06 · Recordatorio 1h", objetivo:"1 hora para la sesión", recurso:"", link:"https://us06web.zoom.us/j/81941368353",
+    mensaje:`*En 1 hora abrimos la sala* ⏳
+
+En el taller *"Claude para Profesionales"* voy a abrir una hoja de datos real y en minutos vas a ver cómo se transforma en un análisis claro y una presentación lista.
+
+Sin fórmulas. Sin programación. Sin horas de trabajo manual.
+
+🔗 Acceso directo por Zoom: https://us06web.zoom.us/j/81941368353
+
+_Conéctate puntual porque la primera demostración es la que cambia totalmente la percepción de lo que una IA puede hacer_
+
+Ten algo para anotar cerca… porque
+*probablemente salgas de la sesión con varias ideas para aplicar desde hoy mismo* 💡` },
+
+  { fase:"Evento", dia:"Miércoles", hora:"9:05 AM", nombre:"MSG-07 · En vivo", objetivo:"Notificar que estamos en vivo", recurso:"", link:"https://us06web.zoom.us/j/81941368353",
+    mensaje:`🔴 *¡ÚLTIMA LLAMADA PARA PARTICIPAR!*
+
+Estamos a punto de comenzar _"Claude para Profesionales"_
+
+Si todavía no entraste, este es el momento.
+
+*Hoy vas a ver una IA capaz de trabajar con hasta 200.000 tokens de contexto (el equivalente a cientos de páginas)* y usar "pensamiento extendido", es decir, dedicar más tiempo a razonar antes de responder cuando la tarea lo requiere.
+
+👉 Únete aquí por Zoom:
+https://us06web.zoom.us/j/81941368353
+
+Conéctate ahora para entrar desde el inicio de la sesión y seguir todo el proceso paso a paso.
+
+*Si el enlace no abre, guarda este número como contacto y podrás acceder de inmediato*` },
+
+  { fase:"Venta", dia:"Miércoles", hora:"1:00 PM", nombre:"MSG-08 · Oferta", objetivo:"Presentar la oferta del curso", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`*Noticia importante para la comunidad* … 🎉
+
+Ya están abiertas las inscripciones a:
+*Domina Claude: De 0 a delegar trabajo real a la IA más avanzada del mercado* — en 4 días.
+
+Un entrenamiento intensivo en vivo donde aprenderás cómo usar Claude para analizar información, generar entregables profesionales y convertir la IA en una herramienta real de trabajo.
+
+👉 *Únete aquí* : https://academiadeia.mx/claude-04
+
+En estos 4 días vas a aprender a:
+✅ *Usar Claude para analizar documentos, datos y reportes con nivel profesional*
+✅ *Trabajar con Excel para pasar de datos a decisiones claras*
+✅ *Crear entregables profesionales como reportes, análisis y presentaciones*
+✅ *Construir un sistema de trabajo con Claude que te ahorre horas cada semana*
+✅ *Dejar de usar la IA como un chat y empezar a usarla como tu socia estratégica*
+
+Es un programa diseñado para profesionales y emprendedores que quieren usar IA de verdad, incluso si hoy nunca han usado Claude.
+
+_Es momento de dejar de hacer todo manualmente y empezar a trabajar con una inteligencia que te ayude a analizar, decidir y producir mejor_ 💪` },
+
+  { fase:"Venta", dia:"Miércoles", hora:"6:00 PM", nombre:"MSG-09 · Repetición", objetivo:"Enviar repetición del webinar", recurso:"", link:"http://cursos.academiadeia.com/repeticion-cla",
+    mensaje:`*¿No alcanzaste a entrar a la clase en vivo?* 😟
+
+No pasa nada… dejamos la repetición disponible por un tiempo limitado.
+
+*En esta sesión verás cómo Claude puede pasar de ser un simple chat a una herramienta de trabajo real, capaz de ayudarte a analizar información, estructurar ideas y producir entregables profesionales*
+
+⚠️ La grabación estará disponible solo por 24 horas.
+
+▶️ Mírala aquí: http://cursos.academiadeia.com/repeticion-cla
+
+Durante la clase verás *demostraciones reales usando documentos y datos*, y entenderás cómo profesionales están empezando a usar Claude para trabajar con más claridad y menos trabajo manual.
+
+Aprovecha mientras sigue disponible. *Después de verla vas a entender por qué esta herramienta está cambiando la forma en que muchos están trabajando con IA*` },
+
+  { fase:"Venta", dia:"Jueves", hora:"9:00 AM", nombre:"MSG-10 · Sommelier", objetivo:"Actividad — mini reto Sommelier", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`Tengo otro mini reto para ti… 🎯
+
+*Escribe en Claude esta instrucción* :
+
+"Toma el siguiente brain-dump desordenado y conviértelo en una estructura de presentación tipo PowerPoint o Google Slides con:
+– Título principal
+– 6–8 diapositivas máximo
+– Título claro por slide
+– 3–5 bullets cortos por slide
+– Idea de visual sugerida por slide
+
+Texto: [pega aquí tus notas desordenadas]"
+
+_Verás cómo en segundos Claude convierte un montón de ideas caóticas en una presentación clara y lista para trabajar_ ✨
+
+Y si este pequeño ejercicio ya te ayudó…
+*Te dejo aquí el link para que te inscribas a Domina Claude* :
+
+👉 https://academiadeia.mx/claude-04
+
+En este programa vas a aprender a:
+📌 Analizar información y estructurar ideas con Claude
+📌 Trabajar con documentos y datos para tomar mejores decisiones
+📌 Construir un flujo de trabajo donde la IA te ayude a producir más
+
+Todo paso a paso, pensado para personas que quieren pasar de probar la IA… a usarla de verdad en su trabajo.
+
+*Si esto lo lograste en 30 segundos… imagina lo que dominarás en 4 días* 🚀` },
+
+  { fase:"Venta", dia:"Jueves", hora:"5:00 PM", nombre:"MSG-11 · Contacto asesores", objetivo:"Derivar a asesores personalizados", recurso:"Video", link:"https://academiadeia.mx/soporte-claude",
+    mensaje:`Gracias por ser parte de esta experiencia… 🙏
+
+Miles de personas se conectaron ayer a la clase
+"Claude para Profesionales".
+
+Fue increíble ver tanta curiosidad y tantas personas queriendo entender cómo usar la IA para trabajo real y no solo para tareas básicas.
+
+Y como muchos se quedaron con dudas sobre cómo aplicar esto en su propio trabajo o negocio, *abrimos algunos espacios para que hables directamente con nuestro equipo*.
+
+💬 Inicia tu chat aquí: https://academiadeia.mx/soporte-claude
+
+La idea es ayudarte a llevar lo que viste en la clase a tu día a día, ya sea para analizar información, organizar tu trabajo o producir entregables profesionales con ayuda de Claude.
+
+Escríbenos y mi equipo te orientará personalmente.` },
+
+  { fase:"Venta", dia:"Viernes", hora:"10:00 AM", nombre:"MSG-13 · Reto Chrome", objetivo:"Actividad — extensión Claude en Chrome", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`*La IA también puede ayudarte a analizar lo que ves en internet mientras trabajas* 🌐
+
+_¿Ya probaste usar Claude directamente en tu navegador?_
+
+Hoy quiero dejarte un reto muy simple para que lo veas por ti mismo:
+
+🔧 Instala la extensión de Claude en Chrome y pruébala en cualquier página que estés leyendo.
+
+Por ejemplo:
+📄 Abre un contrato, un artículo o la web de un competidor. Luego pregúntale algo como:
+_*"Explícame los puntos más importantes de esta página y qué debería prestar atención si estuviera analizando esta información para mi negocio"*_
+
+*Claude puede leer la página contigo mientras navegas y ayudarte a entender lo que estás viendo*
+
+Es IA dentro de tu flujo de trabajo, no en otra pestaña.
+
+⚠️ Recomendación: cuando instales la extensión, no cambies la configuración a "always allow".
+
+Si quieres aprender cómo usar Claude de esta forma en tu trabajo real, inscríbete aquí:
+👉 https://academiadeia.mx/claude-04
+
+*Esto es solo una pequeña muestra de lo que aprenderás en Domina Claude*` },
+
+  { fase:"Venta", dia:"Viernes", hora:"2:00 PM", nombre:"MSG-14 · Tendencia del mercado", objetivo:"Social proof — tendencia del mercado", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`*Algo interesante está pasando con las personas que están descubriendo Claude* … 👀
+
+Muchos llegan pensando que la IA solo sirve para escribir textos rápidos.
+
+_Pero cuando ven que puede analizar documentos largos, trabajar con datos o ayudarte a estructurar entregables profesionales, la forma de usarla cambia completamente_
+
+Si eres de los que sienten que la IA que han probado les da respuestas muy básicas o genéricas…
+no es que la IA no sirva para tu trabajo. Solo necesitas la herramienta correcta y un método claro para usarla.
+
+*En Domina Claude vas a aprender paso a paso cómo usar esta IA para analizar información, organizar ideas y producir entregables profesionales… incluso si hoy apenas estás empezando*
+
+👉 *Inscríbete aquí y empieza tu proceso* : https://academiadeia.mx/claude-04
+
+Es momento de pasar de probar la IA por curiosidad… a usarla como parte real de tu forma de trabajar 💪` },
+
+  { fase:"Venta", dia:"Sábado", hora:"4:00 PM", nombre:"MSG-12 · Encuesta prueba social", objetivo:"Prueba social — encuesta de estado", recurso:"Encuesta", link:"",
+    mensaje:`_Falta muy poco para que empiece "Domina Claude"_ ⏳
+
+Cuéntame algo rápido…
+*¿En qué punto estás ahora mismo?*
+
+Opciones:
+✅ Ya tengo mi cupo y estoy listo/a para empezar.
+🤔 Estoy revisando si este programa es para mí.
+❓ Tengo una duda antes de tomar la decisión.` },
+
+  { fase:"Venta", dia:"Domingo", hora:"2:00 PM", nombre:"MSG-15", objetivo:"Mostrar contenido del Día 3", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`*El Día 3 suele ser donde todo hace "clic"* 🔑
+
+Hasta ese momento ya habrás visto cómo funciona Claude… pero aquí es donde empiezas a delegar trabajo real.
+
+_Mira lo que vas a poder hacer_ :
+
+🖥️ *Configurar Cowork,* el agente de escritorio de Claude.
+📁 Delegar tareas completas que generan archivos profesionales reales.
+🔌 Usar plugins especializados para tareas de negocio (legal, marketing, datos, ventas y más).
+🔗 *Conectar Claude con tus herramientas para trabajar con tus documentos y proyectos*
+⚙️ Construir un flujo de trabajo donde la IA ejecuta y tú diriges.
+
+👉 *Si aún no reservaste tu cupo, hazlo aquí* https://academiadeia.mx/claude-04
+
+Aquí es donde muchos dejan de usar la IA como chat… y empiezan a usarla como parte de su sistema de trabajo.` },
+
+  { fase:"Venta", dia:"Lunes", hora:"1:00 PM", nombre:"MSG-16", objetivo:"Manejar dudas — último día", recurso:"", link:"https://academiadeia.mx/claude-04",
+    mensaje:`Es normal tener dudas cuando aparece una herramienta nueva… 🤔
+
+Por eso existe Domina Claude.
+
+*No necesitas saber programar, ni dominar diez herramientas de IA*. Solo necesitas entender cómo usar la correcta para tu trabajo.
+
+👉 *Inscríbete aquí antes de que cierren las inscripciones* : https://academiadeia.mx/claude-04
+
+_En 4 días en vivo vas a aprender a_ :
+
+📄 Analizar documentos y reportes con ayuda de Claude.
+📊 Trabajar con datos y Excel para tomar mejores decisiones.
+🎯 Crear presentaciones y entregables profesionales listos para usar.
+⚡ *Construir un sistema donde la IA te ayude a producir más en menos tiempo*
+
+Todo paso a paso, sin tecnicismos y aplicado a situaciones reales de trabajo.
+
+Este es el momento de pasar de "probar la IA" a usarla como parte de tu forma de trabajar 💪` },
+  { fase:"Venta", dia:"Lunes", hora:"5:00 PM", nombre:"MSG-17", objetivo:"Asesor directo — cierre final", recurso:"", link:"https://academiadeia.mx/soporte-claude",
+    mensaje:`_Hola, hoy quiero ofrecerte algo distinto_ :
+
+💬 *Un espacio para hablar directamente con un asesor de nuestro equipo y resolver tus dudas sobre Domina Claude*
+
+Escríbenos aquí y te ayudamos a decidir si este programa es para ti, sin compromiso:
+👉 https://academiadeia.mx/soporte-claude
+
+En este entrenamiento aprenderás, *en solo 4 días, a usar Claude para analizar información, trabajar con documentos y datos, y generar entregables profesionales que normalmente tomarían mucho más tiempo*
+
+Aprovecha este espacio para darte unos minutos y descubrir cómo convertir la IA en una herramienta real de trabajo en tu día a día.` }
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+const SK_WA = 'planner_wa_done';
+const SK_SF = 'planner_sf_done';
+
+function loadSet(key) { try { return new Set(JSON.parse(localStorage.getItem(key)||'[]')); } catch { return new Set(); } }
+function saveSet(key, set) { localStorage.setItem(key, JSON.stringify([...set])); }
+
+let waDone = loadSet(SK_WA);
+let sfDone = loadSet(SK_SF);
+let waView = 'table', sfView = 'table';
+let waSortField = null, waSortAsc = true;
+let sfSortField = null, sfSortAsc = true;
+
+/* ── Channel switch ── */
+function switchChannel(ch) {
+  document.getElementById('panel-wa').classList.toggle('active', ch==='wa');
+  document.getElementById('panel-sf').classList.toggle('active', ch==='sf');
+  document.getElementById('shtab-wa').className = 'sh-tab' + (ch==='wa' ? ' active-wa' : '');
+  document.getElementById('shtab-sf').className = 'sh-tab' + (ch==='sf' ? ' active-sf' : '');
+}
+
+/* ── Progress ── */
+function updateAllBadges() {
+  document.getElementById('wa-badge').textContent = `${waDone.size}/${WA_DATA.length}`;
+  document.getElementById('sf-badge').textContent = `${sfDone.size}/${SF_DATA.length}`;
+}
+
+function updateWaProgress() {
+  const pct = WA_DATA.length ? waDone.size/WA_DATA.length*100 : 0;
+  document.getElementById('wa-prog-fill').style.width = pct+'%';
+  document.getElementById('wa-done').textContent = waDone.size;
+  document.getElementById('wa-total').textContent = WA_DATA.length;
+  updateAllBadges();
+}
+function updateSfProgress() {
+  const pct = SF_DATA.length ? sfDone.size/SF_DATA.length*100 : 0;
+  document.getElementById('sf-prog-fill').style.width = pct+'%';
+  document.getElementById('sf-done').textContent = sfDone.size;
+  document.getElementById('sf-total').textContent = SF_DATA.length;
+  updateAllBadges();
+}
+
+/* ── Toggle done ── */
+function waToggle(idx, e) {
+  e.stopPropagation();
+  waDone.has(idx) ? waDone.delete(idx) : waDone.add(idx);
+  saveSet(SK_WA, waDone); updateWaProgress(); waRender();
+}
+function sfToggle(idx, e) {
+  e.stopPropagation();
+  sfDone.has(idx) ? sfDone.delete(idx) : sfDone.add(idx);
+  saveSet(SK_SF, sfDone); updateSfProgress(); sfRender();
+}
+
+/* ── Reset ── */
+function waReset() {
+  if(!confirm('¿Limpiar todos los checks de WhatsApp Difusiones?')) return;
+  waDone.clear(); saveSet(SK_WA, waDone); updateWaProgress(); waRender();
+}
+function sfReset() {
+  if(!confirm('¿Limpiar todos los checks de Sendflow?')) return;
+  sfDone.clear(); saveSet(SK_SF, sfDone); updateSfProgress(); sfRender();
+}
+
+/* ── Filters ── */
+function waGetFiltered() {
+  const fase = document.getElementById('wa-filter-fase').value;
+  const dia  = document.getElementById('wa-filter-dia').value;
+  const q    = document.getElementById('wa-search').value.toLowerCase();
+  let f = WA_DATA.filter(d => {
+    if(fase && d.fase!==fase) return false;
+    if(dia  && d.dia !==dia)  return false;
+    if(q && !`${d.nombre} ${d.segmento} ${d.objetivo} ${d.copy}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(waSortField) f.sort((a,b)=>(waSortAsc?1:-1)*((a[waSortField]||'').localeCompare(b[waSortField]||'')));
+  return f;
+}
+function sfGetFiltered() {
+  const fase = document.getElementById('sf-filter-fase').value;
+  const dia  = document.getElementById('sf-filter-dia').value;
+  const q    = document.getElementById('sf-search').value.toLowerCase();
+  let f = SF_DATA.map((m,i)=>({...m,_idx:i})).filter(m => {
+    if(fase && m.fase!==fase) return false;
+    if(dia  && m.dia !==dia)  return false;
+    if(q && !`${m.nombre} ${m.objetivo} ${m.mensaje}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  if(sfSortField) f.sort((a,b)=>(sfSortAsc?1:-1)*((a[sfSortField]||'').localeCompare(b[sfSortField]||'')));
+  return f;
+}
+
+function waClearFilters(){ document.getElementById('wa-filter-fase').value=''; document.getElementById('wa-filter-dia').value=''; document.getElementById('wa-search').value=''; waRender(); }
+function sfClearFilters(){ document.getElementById('sf-filter-fase').value=''; document.getElementById('sf-filter-dia').value=''; document.getElementById('sf-search').value=''; sfRender(); }
+function waSortBy(f){ waSortField===f?waSortAsc=!waSortAsc:(waSortField=f,waSortAsc=true); waRender(); }
+function sfSortBy(f){ sfSortField===f?sfSortAsc=!sfSortAsc:(sfSortField=f,sfSortAsc=true); sfRender(); }
+
+/* ── Badges ── */
+function waBadge(fase) {
+  const c=fase.toLowerCase(), ic={recordatorio:'🔔',replay:'▶️',venta:'💰'};
+  return `<span class="fase-badge fase-${c}">${ic[c]||''} ${fase}</span>`;
+}
+function sfBadge(fase) {
+  const c=fase.toLowerCase(), ic={recordatorio:'🗓',expectativa:'✨',evento:'🎙',venta:'🎯'};
+  return `<span class="fase-badge fase-${c}">${ic[c]||''} ${fase}</span>`;
+}
+function recursoTag(r){ if(!r) return ''; const ic={video:'🎬',imagen:'🖼',encuesta:'📊','imagen agenda':'📅'}; return `<span class="recurso-badge">${ic[r.toLowerCase()]||'📎'} ${r}</span>`; }
+function linkTag(link){ if(!link) return `<span class="link-pill none">Sin link</span>`; const s=link.replace(/https?:\/\//,'').substring(0,26)+(link.length>30?'…':''); return `<a class="link-pill" href="${link}" target="_blank" onclick="event.stopPropagation()">🔗 ${s}</a>`; }
+
+/* ── Render Table WA ── */
+function waRenderTable(data) {
+  const tb = document.getElementById('wa-tbody');
+  if(!data.length){ tb.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="icon">🔍</div><p>Sin resultados</p></div></td></tr>`; return; }
+  tb.innerHTML = data.map(d=>{
+    const idx=WA_DATA.indexOf(d), done=waDone.has(idx);
+    const preview=d.copy.replace(/\*/g,'').replace(/_/g,'').replace(/\{[^}]+\}/g,'…').substring(0,100)+'…';
+    return `<tr class="${done?'done':''}" onclick="waOpenModal(${idx})">
+      <td onclick="event.stopPropagation()"><button class="btn-check ${done?'checked':''}" onclick="waToggle(${idx},event)">✓</button></td>
+      <td>${waBadge(d.fase)}</td>
+      <td><div class="fecha-dia">${d.dia}</div><div class="fecha-hora">${d.hora}</div></td>
+      <td><div class="seg-etiqueta">Campaña Taller</div><div class="seg-estado">${d.segmento.split('·')[1]?.trim()||''}</div></td>
+      <td class="td-nombre">${d.nombre}</td>
+      <td style="font-size:12px;color:#6b8c6b;max-width:150px">${d.objetivo}</td>
+      <td><div class="copy-preview">${preview}</div></td>
+      <td><button class="btn-eye" onclick="event.stopPropagation();waOpenModal(${idx})">Ver →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Render Timeline WA ── */
+const ORDER = ['—','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+function waRenderTimeline(data) {
+  const c = document.getElementById('wa-timeline-view');
+  if(!data.length){ c.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><p>Sin resultados</p></div>`; return; }
+  const byDay={};
+  data.forEach(d=>{ if(!byDay[d.dia]) byDay[d.dia]=[]; byDay[d.dia].push(d); });
+  c.innerHTML = Object.keys(byDay).sort((a,b)=>(ORDER.indexOf(a)||99)-(ORDER.indexOf(b)||99)).map(dia=>`
+    <div class="timeline-day">
+      <div class="day-header"><div class="day-title">${dia}</div><div class="day-count">${byDay[dia].length} msgs</div><div class="day-line"></div></div>
+      <div class="timeline-items">${byDay[dia].map(d=>{
+        const idx=WA_DATA.indexOf(d), done=waDone.has(idx);
+        return `<div class="tl-card ${d.fase.toLowerCase()} ${done?'done':''}" onclick="waOpenModal(${idx})">
+          <div class="tl-top"><div class="tl-hora">${d.hora}</div><div style="display:flex;align-items:center;gap:6px"><div class="tl-nombre">${d.nombre}</div><button class="btn-check ${done?'checked':''}" onclick="waToggle(${idx},event)" style="width:22px;height:22px;font-size:10px">✓</button></div></div>
+          <div class="tl-segmento">${d.segmento.split('·')[1]?.trim()||''}</div>
+          <div class="tl-objetivo">${d.objetivo}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+
+/* ── Render Table SF ── */
+function sfRenderTable(data) {
+  const tb = document.getElementById('sf-tbody');
+  if(!data.length){ tb.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="icon">🔍</div><p>Sin resultados</p></div></td></tr>`; return; }
+  tb.innerHTML = data.map(m=>{
+    const done=sfDone.has(m._idx);
+    const preview=m.mensaje.replace(/\*/g,'').replace(/_/g,'').substring(0,110)+'…';
+    return `<tr class="${done?'done':''}" onclick="sfOpenModal(${m._idx})">
+      <td onclick="event.stopPropagation()"><button class="btn-check ${done?'checked':''}" onclick="sfToggle(${m._idx},event)">✓</button></td>
+      <td>${sfBadge(m.fase)}</td>
+      <td><div class="fecha-dia">${m.dia}</div><div class="fecha-hora">${m.hora}</div></td>
+      <td class="td-nombre">${m.nombre}</td>
+      <td style="font-size:12px;color:#7a8a80;max-width:150px">${m.objetivo}</td>
+      <td>${recursoTag(m.recurso)}</td>
+      <td><div class="msg-preview">${preview}</div></td>
+      <td><button class="btn-eye" onclick="event.stopPropagation();sfOpenModal(${m._idx})">Ver →</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Render Timeline SF ── */
+function sfRenderTimeline(data) {
+  const c = document.getElementById('sf-timeline-view');
+  if(!data.length){ c.innerHTML=`<div class="empty-state"><div class="icon">🔍</div><p>Sin resultados</p></div>`; return; }
+  const byDay={};
+  data.forEach(m=>{ if(!byDay[m.dia]) byDay[m.dia]=[]; byDay[m.dia].push(m); });
+  c.innerHTML = Object.keys(byDay).sort((a,b)=>(ORDER.indexOf(a)||99)-(ORDER.indexOf(b)||99)).map(dia=>`
+    <div class="timeline-day">
+      <div class="day-header"><div class="day-title">${dia}</div><div class="day-count">${byDay[dia].length} msgs</div><div class="day-line"></div></div>
+      <div class="timeline-items">${byDay[dia].map(m=>{
+        const done=sfDone.has(m._idx);
+        return `<div class="tl-card ${m.fase.toLowerCase()} ${done?'done':''}" onclick="sfOpenModal(${m._idx})">
+          <div class="tl-top"><div class="tl-hora">${m.hora}</div><div style="display:flex;align-items:center;gap:6px"><div class="tl-nombre">${m.nombre}</div><button class="btn-check ${done?'checked':''}" onclick="sfToggle(${m._idx},event)" style="width:22px;height:22px;font-size:10px">✓</button></div></div>
+          ${m.recurso?`<div style="margin-bottom:6px">${recursoTag(m.recurso)}</div>`:''}
+          <div class="tl-objetivo">${m.objetivo}</div>
+          ${m.link?`<div style="margin-top:8px">${linkTag(m.link)}</div>`:''}
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+
+/* ── Render ── */
+function waRender() {
+  const f=waGetFiltered();
+  document.getElementById('wa-showing').textContent=f.length;
+  if(waView==='table') waRenderTable(f); else waRenderTimeline(f);
+}
+function sfRender() {
+  const f=sfGetFiltered();
+  document.getElementById('sf-showing').textContent=f.length;
+  if(sfView==='table') sfRenderTable(f); else sfRenderTimeline(f);
+}
+
+function waSetView(v){
+  waView=v;
+  document.getElementById('wa-table-view').style.display=v==='table'?'block':'none';
+  document.getElementById('wa-timeline-view').style.display=v==='timeline'?'block':'none';
+  document.getElementById('wa-btn-table').classList.toggle('active',v==='table');
+  document.getElementById('wa-btn-tl').classList.toggle('active',v==='timeline');
+  waRender();
+}
+function sfSetView(v){
+  sfView=v;
+  document.getElementById('sf-table-view').style.display=v==='table'?'block':'none';
+  document.getElementById('sf-timeline-view').style.display=v==='timeline'?'block':'none';
+  document.getElementById('sf-btn-table').classList.toggle('active',v==='table');
+  document.getElementById('sf-btn-tl').classList.toggle('active',v==='timeline');
+  sfRender();
+}
+
+/* ── Format text ── */
+function fmt(t){ return t.replace(/\*(.*?)\*/g,'<strong>$1</strong>').replace(/_(.*?)_/g,'<em>$1</em>'); }
+
+/* ── Modals WA ── */
+function waOpenModal(idx) {
+  const d=WA_DATA[idx];
+  document.getElementById('mwa-title').textContent=d.nombre;
+  document.getElementById('mwa-meta').innerHTML=`${waBadge(d.fase)}<span class="fase-badge" style="background:#e8f2ec;border:1px solid #d4e8da;color:#5a7a64">📅 ${d.dia} · ${d.hora}</span>`;
+  document.getElementById('mwa-body').innerHTML=`
+    <div class="modal-section"><div class="modal-section-label">Segmento</div><div class="modal-section-content">${d.segmento}</div></div>
+    <div class="modal-section"><div class="modal-section-label">Objetivo</div><div class="modal-section-content">${d.objetivo}</div></div>
+    ${d.recurso?`<div class="modal-section"><div class="modal-section-label">Recurso</div><div class="modal-section-content">${d.recurso}</div></div>`:''}
+    <div class="modal-section"><div class="modal-section-label">Copy del Mensaje</div><div class="modal-section-content">${fmt(d.copy)}</div><button class="copy-btn" id="wa-copy-btn" onclick="waCopyCopy(${idx})">📋 Copiar copy</button></div>
+    ${d.botones?`<div class="modal-section"><div class="modal-section-label">Botones</div><div class="modal-section-content">${d.botones}</div></div>`:''}`;
+  document.getElementById('modal-wa-overlay').classList.add('open');
+}
+function waCopyCopy(idx){
+  navigator.clipboard.writeText(WA_DATA[idx].copy).then(()=>{
+    const b=document.getElementById('wa-copy-btn'); if(!b) return;
+    b.textContent='✅ ¡Copiado!'; b.classList.add('copied');
+    setTimeout(()=>{b.textContent='📋 Copiar copy';b.classList.remove('copied');},2000);
+  });
+}
+
+/* ── Modals SF ── */
+function sfOpenModal(idx) {
+  const m=SF_DATA[idx];
+  document.getElementById('msf-title').textContent=m.nombre;
+  document.getElementById('msf-meta').innerHTML=`${sfBadge(m.fase)}<span class="fase-badge" style="background:#f0ede6;border:1px solid #e2ddd5;color:#7a8a80">📅 ${m.dia} · ${m.hora}</span>${m.recurso?recursoTag(m.recurso):''}`;
+  document.getElementById('msf-body').innerHTML=`
+    <div class="modal-section"><div class="modal-section-label">Objetivo</div><div class="modal-section-content">${m.objetivo}</div></div>
+    ${m.link?`<div class="modal-section"><div class="modal-section-label">Link de Recurso</div><a class="modal-link" href="${m.link}" target="_blank">🔗 ${m.link}</a></div>`:''}
+    <div class="modal-section"><div class="modal-section-label">Mensaje</div><div class="modal-section-content">${fmt(m.mensaje)}</div><button class="copy-btn" id="sf-copy-btn" onclick="sfCopyMsg(${idx})">📋 Copiar mensaje</button></div>`;
+  document.getElementById('modal-sf-overlay').classList.add('open');
+}
+function sfCopyMsg(idx){
+  navigator.clipboard.writeText(SF_DATA[idx].mensaje).then(()=>{
+    const b=document.getElementById('sf-copy-btn'); if(!b) return;
+    b.textContent='✅ ¡Copiado!'; b.classList.add('copied');
+    setTimeout(()=>{b.textContent='📋 Copiar mensaje';b.classList.remove('copied');},2000);
+  });
+}
+
+function closeModal(ch,e){ if(e.target===document.getElementById(`modal-${ch}-overlay`)) closeModalDirect(ch); }
+function closeModalDirect(ch){ document.getElementById(`modal-${ch}-overlay`).classList.remove('open'); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModalDirect('wa'); closeModalDirect('sf'); }});
+
+/* ── Day filter population ── */
+function populateDayFilters(){
+  const waDias=[...new Set(WA_DATA.map(d=>d.dia))];
+  const waS=document.getElementById('wa-filter-dia');
+  waDias.forEach(d=>{ const o=document.createElement('option'); o.value=d; o.textContent=d; waS.appendChild(o); });
+
+  const sfDias=[...new Set(SF_DATA.map(d=>d.dia))];
+  const sfS=document.getElementById('sf-filter-dia');
+  sfDias.forEach(d=>{ const o=document.createElement('option'); o.value=d; o.textContent=d; sfS.appendChild(o); });
+}
+
+/* ── Event listeners ── */
+['wa-filter-fase','wa-filter-dia'].forEach(id=>document.getElementById(id).addEventListener('change',waRender));
+document.getElementById('wa-search').addEventListener('input',waRender);
+['sf-filter-fase','sf-filter-dia'].forEach(id=>document.getElementById(id).addEventListener('change',sfRender));
+document.getElementById('sf-search').addEventListener('input',sfRender);
+
+/* ── INIT ── */
+populateDayFilters();
+updateWaProgress();
+updateSfProgress();
+waSetView('table');
+sfSetView('table');
+</script>
+</body>
+</html>
