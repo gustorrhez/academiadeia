@@ -799,6 +799,11 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 .hero-body {
   padding-left: max(32px, calc((100vw - 1090px) / 2)) !important;
   padding-right: clamp(40px, 7vw, 110px) !important;
+  justify-content: flex-start !important;
+}
+/* Limitar altura del hero para que min-height no supere max-height */
+.hero {
+  min-height: min(calc(100vh - 64px), 780px) !important;
 }
 
 </style>
