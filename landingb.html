@@ -59,7 +59,7 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 .footer-logo-divider{width:1px;height:30px;background:rgba(255,255,255,.18)}
 
 /* ── HERO ── */
-.hero{background:var(--sl);position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) 460px;align-items:stretch;min-height:calc(100vh - 64px);max-height:780px;max-width:1000px;margin:0 auto;border-radius:0}
+.hero{background:var(--sl);position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) min(48%, 520px);align-items:stretch;min-height:calc(100vh - 64px);max-height:780px;max-width:none;margin:0 auto;border-radius:0}
 .hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(15,23,42,0.09) 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
 .hero-wm{position:absolute;bottom:-20px;left:20px;font-family:var(--fs);font-size:180px;font-weight:700;color:rgba(196,98,45,0.06);line-height:1;pointer-events:none;letter-spacing:-0.08em;user-select:none;font-style:italic}
 .hero-body{padding:36px 32px 36px 0;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;max-width:none}
@@ -798,7 +798,7 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 ────────────────────────────────────────────────────────────────── */
 .hero-body {
   padding-left: max(32px, calc((100vw - 1000px) / 2)) !important;
-  padding-right: 32px !important;
+  padding-right: clamp(24px, 3vw, 60px) !important;
 }
 
 </style>
