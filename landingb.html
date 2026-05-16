@@ -790,6 +790,17 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
   box-sizing: border-box !important;
 }
 
+/* ── HERO: alinear texto con el contenido de las demás secciones ──
+   Las secciones usan max(32px, calc((100% - 1000px) / 2)) como padding.
+   El hero-body necesita la misma fórmula referenciada al viewport
+   para que el borde izquierdo del texto quede al mismo nivel.
+   Ajusta el "1000px" si quieres márgenes más anchos o más estrechos.
+────────────────────────────────────────────────────────────────── */
+.hero-body {
+  padding-left: max(32px, calc((100vw - 1000px) / 2)) !important;
+  padding-right: 32px !important;
+}
+
 </style>
 </head>
 <body>
