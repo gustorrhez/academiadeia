@@ -799,11 +799,25 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 .hero-body {
   padding-left: max(32px, calc((100vw - 1090px) / 2)) !important;
   padding-right: clamp(40px, 7vw, 110px) !important;
+  padding-top: 28px !important;
   justify-content: flex-start !important;
 }
 /* Limitar altura del hero para que min-height no supere max-height */
 .hero {
   min-height: min(calc(100vh - 64px), 780px) !important;
+}
+/* Pills — tarjetas visuales con fondo, borde y radio */
+.hero .pill {
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(15,23,42,0.09);
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+}
+/* Foto — separación del borde derecho ~15% */
+.hero-photo-col {
+  padding-right: 15% !important;
+  padding-bottom: 0 !important;
 }
 
 </style>
