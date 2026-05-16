@@ -798,7 +798,7 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 ────────────────────────────────────────────────────────────────── */
 .hero-body {
   padding-left: max(32px, calc((100vw - 1000px) / 2)) !important;
-  padding-right: clamp(24px, 3vw, 60px) !important;
+  padding-right: clamp(60px, 10vw, 200px) !important;
 }
 
 </style>
@@ -1316,7 +1316,24 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
 
     <!-- Caja destino: GHL mueve el form nativo aquí para trackear el optin -->
     <div class="popup-body-ghl">
-      <div id="teleport-box" style="width:100%;min-height:400px;"></div>
+      <div id="teleport-box"></div>
+
+      <!-- Fallback visible hasta que GHL cargue su form nativo -->
+      <div id="popup-fallback-form" style="padding:4px 0 8px">
+        <div class="popup-field">
+          <label class="popup-label">Nombre</label>
+          <input class="popup-input" type="text" placeholder="Tu nombre">
+        </div>
+        <div class="popup-field">
+          <label class="popup-label">Correo</label>
+          <input class="popup-input" type="email" placeholder="Tu mejor correo">
+        </div>
+        <div class="popup-check">
+          <input type="checkbox" id="terms">
+          <label for="terms">Acepto los términos y condiciones y la política de privacidad.</label>
+        </div>
+        <div class="popup-btn">CONFIRMAR MI LUGAR GRATIS →</div>
+      </div>
     </div>
 
     <!-- Pie de seguridad -->
@@ -1344,6 +1361,9 @@ document.addEventListener('DOMContentLoaded', function () {
         ? formContainer.parentElement
         : formContainer.closest('.form-builder-selector, .hl_form-builder, .c-form') || formContainer;
       targetBox.appendChild(wrapper);
+      // Ocultar el fallback estático ahora que el form de GHL está activo
+      var fallback = document.getElementById('popup-fallback-form');
+      if (fallback) fallback.style.display = 'none';
       clearInterval(moveFormTimer);
     }
 
