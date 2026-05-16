@@ -767,6 +767,29 @@ body{font-family:var(--fb);background:#F0F3F8;font-size:16px;line-height:1.65;-w
   .prob-quote p{font-size:15px}
 }
 
+/* ══════════════════════════════════════════
+   FULL-WIDTH OVERRIDE — GHL CONTAINER BREAKOUT
+   Fuerza que cada sección ocupe el 100% del viewport.
+   El truco calc(-50vw + 50%) rompe el wrapper de GHL.
+══════════════════════════════════════════ */
+.nav,
+.hero,
+.ticker,
+.s-wh,
+.s-dk,
+.s-sl,
+.s-dk2,
+.s-or,
+.quote-sec,
+.footer,
+.sticky-cta,
+.popup-overlay {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin-left: calc(-50vw + 50%) !important;
+  box-sizing: border-box !important;
+}
+
 </style>
 </head>
 <body>
