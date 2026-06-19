@@ -7,129 +7,165 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
   :root {
-    --bg:      #0d0f14; --bg2: #13161e; --bg3: #1a1e28;
-    --border:  rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
-    --text:    #e8eaf0; --muted: #7a7f94; --accent: #f97316;
-    --blue:    #3b82f6; --teal: #14b8a6; --purple: #a78bfa;
-    --red:     #f87171; --amber: #fbbf24; --green: #34d399;
+    --bg:      #F8F9FA;
+    --bg2:     #FFFFFF;
+    --bg3:     #F1F3F5;
+    --border:  #E5E7EB;
+    --border2: #D1D5DB;
+    --text:    #1F2937;
+    --muted:   #6B7280;
+    --accent:  #F97316;
+    --accent2: #FDBA74;
+    --purple:  #7C3AED;
+    --purple2: #EDE9FE;
+    --blue:    #3B82F6;
+    --teal:    #0D9488;
+    --red:     #DC2626;
+    --amber:   #D97706;
+    --green:   #059669;
+    --cyan:    #0891B2;
+    --sidebar: #1A1E28;
     --font-h:  'Syne', sans-serif;
     --font-b:  'DM Sans', sans-serif;
-    --r: 10px; --r-lg: 16px;
+    --r:       10px;
+    --r-lg:    16px;
+    --shadow:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow2: 0 4px 12px rgba(0,0,0,0.08);
   }
-  body { background:var(--bg); color:var(--text); font-family:var(--font-b); font-size:17px; line-height:1.6; min-height:100vh; }
-  body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); opacity:0.4; }
-  body::after { content:''; position:fixed; top:-200px; left:50%; transform:translateX(-50%);
-    width:600px; height:400px; z-index:0; pointer-events:none;
-    background:radial-gradient(ellipse at center, rgba(249,115,22,0.12) 0%, transparent 70%); }
-  .wrap { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
 
-  /* HEADER */
-  .header { margin-bottom:2rem; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-b); font-size:22px; line-height:1.6; min-height:100vh; }
+
+  .wrap { max-width:980px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+
+  /* ── HEADER ── */
+  .header { background:var(--sidebar); border-radius:var(--r-lg); padding:1.75rem 2rem; margin-bottom:1.75rem; box-shadow:var(--shadow2); }
   .header-top { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
-  .logo-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .logo-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
   .logo-dot { width:10px; height:10px; border-radius:50%; background:var(--accent); }
-  .logo-lbl { font-family:var(--font-h); font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
-  h1 { font-family:var(--font-h); font-size:clamp(24px,4vw,36px); font-weight:800; line-height:1.1; }
+  .logo-lbl { font-family:var(--font-h); font-size:16px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+  h1 { font-family:var(--font-h); font-size:clamp(22px,4vw,34px); font-weight:800; color:#FFFFFF; line-height:1.1; }
   h1 span { color:var(--accent); }
-  .subtitle { font-size:15px; color:var(--muted); margin-top:8px; }
-  .subtitle strong { color:var(--text); }
+  .subtitle { font-size:18px; color:rgba(255,255,255,0.55); margin-top:6px; }
+  .subtitle strong { color:rgba(255,255,255,0.9); }
   .header-meta { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-  .chip { display:inline-flex; align-items:center; gap:6px; background:var(--bg3); border:.5px solid var(--border2); border-radius:20px; padding:5px 13px; font-size:13px; color:var(--muted); }
-  .chip strong { color:var(--text); }
-  .chip-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  .chip { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.08); border:.5px solid rgba(255,255,255,0.15); border-radius:20px; padding:5px 13px; font-size:17px; color:rgba(255,255,255,0.7); }
+  .chip strong { color:#fff; }
+  .chip-dot { width:6px; height:6px; border-radius:50%; background:#34d399; animation:pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 
-  /* FLOW */
-  .flow-section { margin-bottom:2rem; }
-  .section-label { font-size:13px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.75rem; }
-  .flow { display:flex; align-items:center; flex-wrap:wrap; gap:4px; }
-  .flow-node { display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 16px; border-radius:var(--r); border:.5px solid var(--border2); font-size:13px; font-weight:500; min-width:100px; text-align:center; }
-  .flow-node small { font-size:12px; font-weight:400; opacity:.7; }
-  .fn-pur { background:rgba(167,139,250,.08); border-color:rgba(167,139,250,.25); color:var(--purple); }
-  .fn-gus { background:rgba(249,115,22,.12); border-color:rgba(249,115,22,.4); color:var(--accent); font-weight:600; }
-  .fn-meet{ background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.25); color:var(--blue); }
-  .fn-agt { background:rgba(20,184,166,.08); border-color:rgba(20,184,166,.25); color:var(--teal); }
-  .flow-arrow { color:var(--muted); padding:0 6px; font-size:16px; }
-  .flow-areas { display:flex; flex-direction:column; gap:4px; }
-  .area-chip { background:var(--bg3); border:.5px solid var(--border); border-radius:6px; padding:4px 10px; font-size:13px; color:var(--muted); }
+  /* ── CICLOS ── */
+  .ciclo-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.5rem; }
+  .ciclo-badge { border-radius:8px; padding:6px 14px; font-size:16px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; border:.5px solid; }
+  .cb-done   { background:#D1FAE5; border-color:#6EE7B7; color:#065F46; }
+  .cb-active { background:#FEF3C7; border-color:#FCD34D; color:#92400E; }
+  .cb-next   { background:var(--bg3); border-color:var(--border); color:var(--muted); }
 
-  /* STATS */
-  .stats { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-bottom:1.75rem; }
-  .stat { background:var(--bg2); border:.5px solid var(--border); border-radius:var(--r); padding:14px 16px; }
-  .stat .num { font-family:var(--font-h); font-size:30px; font-weight:800; line-height:1; }
-  .stat .lbl { font-size:13px; color:var(--muted); margin-top:4px; }
-  .stat-bar { height:3px; border-radius:2px; margin-top:10px; opacity:.4; }
-  .s-grn .num{color:var(--green);} .s-grn .stat-bar{background:var(--green);}
-  .s-red .num{color:var(--red);}   .s-red .stat-bar{background:var(--red);}
-  .s-amb .num{color:var(--amber);} .s-amb .stat-bar{background:var(--amber);}
-  .s-blu .num{color:var(--blue);}  .s-blu .stat-bar{background:var(--blue);}
-  .s-gry .num{color:var(--muted);} .s-gry .stat-bar{background:var(--muted);}
+  /* ── FLOW ── */
+  .flow-section { margin-bottom:1.75rem; }
+  .section-label { font-size:16px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.75rem; }
+  .flow { display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
+  .flow-node { display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 16px; border-radius:var(--r); border:.5px solid var(--border); font-size:17px; font-weight:500; min-width:100px; text-align:center; background:var(--bg2); box-shadow:var(--shadow); }
+  .flow-node small { font-size:16px; font-weight:400; opacity:.7; }
+  .fn-areas { background:var(--purple2); border-color:#C4B5FD; color:var(--purple); }
+  .fn-gus   { background:#FFF7ED; border-color:#FDBA74; color:var(--accent); font-weight:700; }
+  .fn-meet  { background:#EFF6FF; border-color:#BFDBFE; color:var(--blue); }
+  .fn-agt   { background:#F0FDF4; border-color:#86EFAC; color:var(--teal); }
+  .flow-arrow { color:var(--muted); padding:0 4px; font-size:21px; }
+  .flow-areas-col { display:flex; flex-direction:column; gap:4px; }
+  .area-chip { background:var(--bg2); border:.5px solid var(--border); border-radius:6px; padding:4px 10px; font-size:17px; color:var(--muted); box-shadow:var(--shadow); }
 
-  /* PRÓXIMA REUNIÓN + DOC LINK */
+  /* ── STATS ── */
+  .stats { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px; margin-bottom:1.75rem; }
+  .stat { background:var(--bg2); border:.5px solid var(--border); border-radius:var(--r); padding:14px 16px; box-shadow:var(--shadow); }
+  .stat .num { font-family:var(--font-h); font-size:36px; font-weight:800; line-height:1; }
+  .stat .lbl { font-size:16px; color:var(--muted); margin-top:4px; }
+  .stat-bar { height:3px; border-radius:2px; margin-top:10px; }
+  .s-grn .num{color:var(--green);}  .s-grn .stat-bar{background:#6EE7B7;}
+  .s-red .num{color:var(--red);}    .s-red .stat-bar{background:#FCA5A5;}
+  .s-amb .num{color:var(--amber);}  .s-amb .stat-bar{background:#FCD34D;}
+  .s-cyn .num{color:var(--cyan);}   .s-cyn .stat-bar{background:#67E8F9;}
+  .s-pur .num{color:var(--purple);} .s-pur .stat-bar{background:#C4B5FD;}
+  .s-gry .num{color:var(--muted);}  .s-gry .stat-bar{background:#D1D5DB;}
+
+  /* ── INFO ROW ── */
   .info-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:1.75rem; }
-  .info-card { background:var(--bg2); border:.5px solid var(--border2); border-radius:var(--r-lg); padding:16px 20px; display:flex; align-items:center; gap:14px; }
-  .info-icon { font-size:26px; flex-shrink:0; }
-  .info-card .info-title { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
-  .info-card .info-val { font-size:15px; font-weight:500; color:var(--text); }
-  .info-card .info-sub { font-size:13px; color:var(--muted); margin-top:2px; }
-  .doc-link { display:inline-flex; align-items:center; gap:6px; background:rgba(249,115,22,.12); border:.5px solid rgba(249,115,22,.3); border-radius:8px; padding:7px 14px; font-size:14px; font-weight:500; color:var(--accent); text-decoration:none; margin-top:8px; transition:background .15s; }
-  .doc-link:hover { background:rgba(249,115,22,.22); }
+  .info-card { background:var(--bg2); border:.5px solid var(--border); border-radius:var(--r-lg); padding:16px 20px; display:flex; align-items:flex-start; gap:14px; box-shadow:var(--shadow); }
+  .info-icon { font-size:31px; flex-shrink:0; margin-top:2px; }
+  .info-title { font-size:14px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .info-val { font-size:20px; font-weight:600; color:var(--text); }
+  .info-sub { font-size:17px; color:var(--muted); margin-top:2px; }
+  .doc-link { display:inline-flex; align-items:center; gap:6px; background:var(--accent); border-radius:8px; padding:7px 14px; font-size:17px; font-weight:600; color:#fff; text-decoration:none; margin-top:8px; transition:opacity .15s; box-shadow:0 2px 6px rgba(249,115,22,.3); }
+  .doc-link:hover { opacity:.88; }
+  .doc-link-pur { background:var(--purple); box-shadow:0 2px 6px rgba(124,58,237,.25); }
 
-  /* FILTERS */
+  /* ── COMPROMISOS ── */
+  .compromisos { border-radius:var(--r-lg); padding:14px 20px; margin-bottom:1rem; display:flex; align-items:flex-start; gap:14px; box-shadow:var(--shadow); }
+  .comp-red  { background:#FEF2F2; border:.5px solid #FECACA; }
+  .comp-cyan { background:#ECFEFF; border:.5px solid #A5F3FC; }
+  .comp-title { font-size:14px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; margin-bottom:8px; }
+  .comp-red  .comp-title { color:var(--red); }
+  .comp-cyan .comp-title { color:var(--cyan); }
+  .comp-item { font-size:18px; color:var(--text); margin-bottom:4px; }
+
+  /* ── FILTERS ── */
   .filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.25rem; }
-  .fbtn { background:var(--bg2); border:.5px solid var(--border2); border-radius:20px; padding:6px 14px; font-size:14px; font-family:var(--font-b); color:var(--muted); cursor:pointer; transition:all .15s; }
-  .fbtn:hover { color:var(--text); background:var(--bg3); }
-  .fbtn.active { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:500; }
+  .fbtn { background:var(--bg2); border:.5px solid var(--border); border-radius:20px; padding:6px 14px; font-size:18px; font-family:var(--font-b); color:var(--muted); cursor:pointer; transition:all .15s; box-shadow:var(--shadow); }
+  .fbtn:hover { border-color:var(--border2); color:var(--text); }
+  .fbtn.active { background:var(--purple); border-color:var(--purple); color:#fff; font-weight:600; box-shadow:0 2px 8px rgba(124,58,237,.25); }
 
-  /* SECTION DIVIDERS */
+  /* ── SECTION DIVIDERS ── */
   .pri-section { margin-bottom:.5rem; margin-top:1.5rem; display:flex; align-items:center; gap:12px; }
-  .pri-section .ps-bar { height:2px; flex:1; border-radius:2px; opacity:.3; }
-  .pri-section .ps-lbl { font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
-  .ps-grn .ps-lbl{color:var(--green);} .ps-grn .ps-bar{background:var(--green);}
-  .ps-red .ps-lbl{color:var(--red);}   .ps-red .ps-bar{background:var(--red);}
-  .ps-amb .ps-lbl{color:var(--amber);} .ps-amb .ps-bar{background:var(--amber);}
-  .ps-gry .ps-lbl{color:var(--muted);} .ps-gry .ps-bar{background:var(--muted);}
+  .ps-bar { height:2px; flex:1; border-radius:2px; }
+  .ps-lbl { font-size:16px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; }
+  .ps-grn .ps-lbl{color:var(--green);}  .ps-grn .ps-bar{background:#6EE7B7;}
+  .ps-cyn .ps-lbl{color:var(--cyan);}   .ps-cyn .ps-bar{background:#67E8F9;}
+  .ps-red .ps-lbl{color:var(--red);}    .ps-red .ps-bar{background:#FCA5A5;}
+  .ps-amb .ps-lbl{color:var(--amber);}  .ps-amb .ps-bar{background:#FCD34D;}
+  .ps-gry .ps-lbl{color:var(--muted);}  .ps-gry .ps-bar{background:#D1D5DB;}
 
-  /* GRID */
+  /* ── REQ CARDS ── */
   .req-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(285px,1fr)); gap:10px; }
-  .req-card { background:var(--bg2); border:.5px solid var(--border); border-radius:var(--r-lg); padding:14px 16px; cursor:pointer; transition:border-color .2s, background .2s, transform .15s; position:relative; overflow:hidden; }
-  .req-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
-  .pri-hecha::before { background:var(--green); }
-  .pri-alta::before  { background:var(--red); }
-  .pri-media::before { background:var(--amber); }
-  .pri-pend::before  { background:var(--muted); }
-  .req-card:hover { border-color:var(--border2); background:var(--bg3); transform:translateY(-1px); }
-  .req-card.expanded { border-color:var(--border2); }
+  .req-card { background:var(--bg2); border:.5px solid var(--border); border-radius:var(--r-lg); padding:14px 16px; cursor:pointer; transition:all .2s; position:relative; overflow:hidden; box-shadow:var(--shadow); }
+  .req-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; }
+  .pri-hecha::before  { background:var(--green); }
+  .pri-alta::before   { background:var(--red); }
+  .pri-media::before  { background:var(--amber); }
+  .pri-dev::before    { background:var(--cyan); }
+  .pri-pend::before   { background:var(--muted); }
+  .req-card:hover { border-color:var(--border2); box-shadow:var(--shadow2); transform:translateY(-1px); }
+  .req-card.expanded { border-color:var(--border2); box-shadow:var(--shadow2); }
   .req-card.hidden { display:none; }
-  .req-top { display:flex; align-items:flex-start; gap:8px; }
-  .req-id { font-size:13px; font-weight:600; letter-spacing:.08em; color:var(--muted); padding-top:2px; white-space:nowrap; }
-  .req-title { font-size:14px; font-weight:500; color:var(--text); flex:1; line-height:1.4; }
-  .badge { display:inline-block; font-size:12px; padding:3px 10px; border-radius:10px; font-weight:600; white-space:nowrap; margin-top:3px; }
-  .b-alta  { background:rgba(248,113,113,.12); color:var(--red);   border:.5px solid rgba(248,113,113,.25); }
-  .b-media { background:rgba(251,191,36,.10);  color:var(--amber); border:.5px solid rgba(251,191,36,.25); }
-  .b-hecha { background:rgba(52,211,153,.10);  color:var(--green); border:.5px solid rgba(52,211,153,.25); }
-  .b-pend  { background:rgba(122,127,148,.12); color:var(--muted); border:.5px solid var(--border2); }
-  .b-nuevo { background:rgba(59,130,246,.10);  color:var(--blue);  border:.5px solid rgba(59,130,246,.25); }
-  .req-area { font-size:13px; color:var(--muted); margin-top:6px; }
-  .req-desc { display:none; font-size:13px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:.5px solid var(--border); line-height:1.6; }
-  .req-card.expanded .req-desc { display:block; }
-  .expand-hint { font-size:12px; color:var(--muted); opacity:.4; margin-top:8px; }
-  .empty-msg { text-align:center; color:var(--muted); font-size:14px; padding:3rem; display:none; }
 
-  /* FOOTER */
+  .req-top { display:flex; align-items:flex-start; gap:8px; }
+  .req-id { font-size:16px; font-weight:700; letter-spacing:.08em; color:var(--muted); padding-top:3px; white-space:nowrap; }
+  .req-title { font-size:18px; font-weight:600; color:var(--text); flex:1; line-height:1.4; }
+  .badge { display:inline-block; font-size:14px; padding:3px 10px; border-radius:10px; font-weight:600; white-space:nowrap; margin-top:3px; }
+  .b-alta  { background:#FEE2E2; color:var(--red);    border:.5px solid #FECACA; }
+  .b-media { background:#FEF3C7; color:var(--amber);  border:.5px solid #FDE68A; }
+  .b-hecha { background:#D1FAE5; color:var(--green);  border:.5px solid #6EE7B7; }
+  .b-dev   { background:#ECFEFF; color:var(--cyan);   border:.5px solid #A5F3FC; }
+  .b-nuevo { background:#EDE9FE; color:var(--purple); border:.5px solid #C4B5FD; }
+  .b-pend  { background:var(--bg3); color:var(--muted); border:.5px solid var(--border); }
+  .req-area { font-size:16px; color:var(--muted); margin-top:6px; }
+  .req-desc { display:none; font-size:17px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:.5px solid var(--border); line-height:1.6; }
+  .req-card.expanded .req-desc { display:block; }
+  .expand-hint { font-size:14px; color:var(--muted); opacity:.5; margin-top:8px; }
+
+  .empty-msg { text-align:center; color:var(--muted); font-size:18px; padding:3rem; display:none; }
+
+  /* ── FOOTER ── */
   .footer { margin-top:3rem; padding-top:1.5rem; border-top:.5px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
-  .footer-l { font-size:13px; color:var(--muted); }
+  .footer-l { font-size:17px; color:var(--muted); }
   .footer-l strong { color:var(--text); }
-  .footer-r { display:flex; gap:10px; }
-  .tag { font-size:13px; background:var(--bg3); border:.5px solid var(--border2); border-radius:6px; padding:4px 10px; color:var(--muted); }
+  .footer-r { display:flex; gap:8px; flex-wrap:wrap; }
+  .tag { font-size:16px; background:var(--bg2); border:.5px solid var(--border); border-radius:6px; padding:4px 10px; color:var(--muted); box-shadow:var(--shadow); }
 
   @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
-  .wrap { animation:fadeUp .5s ease both; }
+  .wrap { animation:fadeUp .4s ease both; }
 
-  @media(max-width:640px){
+  @media(max-width:700px){
     .stats{grid-template-columns:repeat(3,1fr);}
     .info-row{grid-template-columns:1fr;}
     .header-top{flex-direction:column;}
@@ -146,21 +182,28 @@
       <div>
         <div class="logo-row"><div class="logo-dot"></div><span class="logo-lbl">Agentiza × Academia de IA</span></div>
         <h1>Panel de <span>Seguimiento</span></h1>
-        <p class="subtitle">Gestión de requerimientos · <strong>Gus Torres</strong> ↔ Facundo · Ciclo 01</p>
+        <p class="subtitle">Gestión de requerimientos · <strong>Gus Torres</strong> ↔ Facundo · Fernando</p>
       </div>
       <div class="header-meta">
         <div class="chip"><div class="chip-dot"></div><strong>En curso</strong></div>
-        <div class="chip">Viernes 5 junio 2026</div>
-        <div class="chip">Reunión quincenal</div>
+        <div class="chip">Última reunión: 18 junio 2026</div>
+        <div class="chip">Próxima: 2 julio 2026</div>
       </div>
     </div>
   </header>
+
+  <!-- CICLOS -->
+  <div class="ciclo-row">
+    <span class="ciclo-badge cb-done">✓ Ciclo 01 · 5 Jun 2026</span>
+    <span class="ciclo-badge cb-active">→ Ciclo 02 · 18 Jun 2026</span>
+    <span class="ciclo-badge cb-next">Ciclo 03 · 2 Jul 2026</span>
+  </div>
 
   <!-- FLUJO -->
   <div class="flow-section">
     <div class="section-label">Flujo de trabajo</div>
     <div class="flow">
-      <div class="flow-areas">
+      <div class="flow-areas-col">
         <div class="area-chip">Admisiones</div>
         <div class="area-chip">Customer Success</div>
         <div class="area-chip">Operaciones</div>
@@ -176,10 +219,11 @@
 
   <!-- STATS -->
   <div class="stats">
-    <div class="stat s-grn"><div class="num">2</div><div class="lbl">Hechas ✓</div><div class="stat-bar"></div></div>
-    <div class="stat s-red"><div class="num">4</div><div class="lbl">Alta prioridad</div><div class="stat-bar"></div></div>
-    <div class="stat s-amb"><div class="num">8</div><div class="lbl">Media prioridad</div><div class="stat-bar"></div></div>
-    <div class="stat s-blu"><div class="num">1</div><div class="lbl">Nuevo (Ciclo 01)</div><div class="stat-bar"></div></div>
+    <div class="stat s-grn"><div class="num">6</div><div class="lbl">Hechas ✓</div><div class="stat-bar"></div></div>
+    <div class="stat s-cyn"><div class="num">3</div><div class="lbl">En desarrollo</div><div class="stat-bar"></div></div>
+    <div class="stat s-red"><div class="num">1</div><div class="lbl">Alta prioridad</div><div class="stat-bar"></div></div>
+    <div class="stat s-amb"><div class="num">6</div><div class="lbl">Media prioridad</div><div class="stat-bar"></div></div>
+    <div class="stat s-pur"><div class="num">2</div><div class="lbl">Nuevos</div><div class="stat-bar"></div></div>
     <div class="stat s-gry"><div class="num">1</div><div class="lbl">Por definir</div><div class="stat-bar"></div></div>
   </div>
 
@@ -189,51 +233,60 @@
       <div class="info-icon">📅</div>
       <div>
         <div class="info-title">Próxima reunión</div>
-        <div class="info-val">Miércoles 18 de junio 2026</div>
-        <div class="info-sub">12:00 pm · Ciudad de México · Facundo + Fernando</div>
+        <div class="info-val">Jueves 2 de julio 2026</div>
+        <div class="info-sub">Ciclo 03 · Facundo + Fernando</div>
       </div>
     </div>
     <div class="info-card">
       <div class="info-icon">📄</div>
       <div>
-        <div class="info-title">Documento de requerimientos detallado</div>
-        <div class="info-val">v3.0 · Ciclo 01 · Jun 2026</div>
+        <div class="info-title">Documento detallado</div>
+        <div class="info-val">v4.0 · Ciclo 02 · Jun 2026</div>
         <a class="doc-link" href="https://gustorrhez.github.io/academiadeia/board-optimizar-agentiza.html" target="_blank">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Ver documento completo
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Ver documento
         </a>
       </div>
     </div>
     <div class="info-card">
       <div class="info-icon">📝</div>
       <div>
-        <div class="info-title">Minuta · Ciclo 01</div>
-        <div class="info-val">Reunión 5 junio 2026</div>
-        <a class="doc-link" href="https://gustorrhez.github.io/academiadeia/Minuta_Reunion_Agentiz-05jun2026.pdf" target="_blank">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <div class="info-title">Minuta · Ciclo 02</div>
+        <div class="info-val">Reunión 18 junio 2026</div>
+        <a class="doc-link doc-link-pur" href="LINK_MINUTA_CICLO02" target="_blank">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Ver minuta
         </a>
       </div>
     </div>
   </div>
 
-  <!-- COMPROMISOS PENDIENTES -->
-  <div style="background:rgba(248,113,113,.06);border:.5px solid rgba(248,113,113,.2);border-radius:var(--r-lg);padding:14px 20px;margin-bottom:1.75rem;display:flex;align-items:flex-start;gap:14px;">
-    <div style="font-size:20px;flex-shrink:0;margin-top:2px;">⚡</div>
+  <!-- COMPROMISOS -->
+  <div class="compromisos comp-cyan">
+    <div style="font-size:26px;flex-shrink:0;margin-top:2px;">🚀</div>
     <div>
-      <div style="font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Compromisos pendientes · Lunes 9 junio</div>
-      <div style="display:flex;flex-direction:column;gap:5px;">
-        <div style="font-size:14px;color:var(--text);">→ <strong>Agentiza (Fernando):</strong> Estimado de tiempo para REQ-04 (Exclusión de leads)</div>
-        <div style="font-size:14px;color:var(--text);">→ <strong>Agentiza (Fernando):</strong> Viabilidad técnica de REQ-13 (Cambiar plantilla)</div>
-      </div>
+      <div class="comp-title">En desarrollo · Entrega aprox. semana del 25 Jun</div>
+      <div class="comp-item">→ <strong>Fernando:</strong> Botón cancelar/pausar envío de campaña (REQ-03)</div>
+      <div class="comp-item">→ <strong>Fernando:</strong> Métrica de costo por campaña — Meta template × mensajes enviados (REQ-05)</div>
+      <div class="comp-item">→ <strong>Fernando:</strong> Botones Quick Reply en flujos e intenciones (REQ-12)</div>
+    </div>
+  </div>
+  <div class="compromisos comp-red" style="margin-top:0">
+    <div style="font-size:26px;flex-shrink:0;margin-top:2px;">⚡</div>
+    <div>
+      <div class="comp-title">Pendientes · Gus Torres — antes del 2 Jul</div>
+      <div class="comp-item">→ Recopilar screenshots de mensajes Meta que no replican en Agentiza (REQ-17)</div>
+      <div class="comp-item">→ Coordinar con Gastón arquitectura multi-producto Hotmart para gira Eduardo (REQ-18)</div>
+      <div class="comp-item">→ Levantar necesidades de CS y Admisiones para asistente interno (REQ-11)</div>
     </div>
   </div>
 
   <!-- FILTERS -->
-  <div class="section-label">Requerimientos · 16 ítems</div>
+  <div class="section-label" style="margin-top:1.5rem">Requerimientos · 19 ítems</div>
   <div class="filters" style="margin-top:.5rem">
-    <button class="fbtn active" onclick="filter(this,'all')">Todos (16)</button>
-    <button class="fbtn" onclick="filter(this,'hecha')">🟢 Hechas</button>
+    <button class="fbtn active" onclick="filter(this,'all')">Todos (19)</button>
+    <button class="fbtn" onclick="filter(this,'hecha')">🟢 Hechas (6)</button>
+    <button class="fbtn" onclick="filter(this,'dev')">🔵 En desarrollo</button>
     <button class="fbtn" onclick="filter(this,'alta')">🔴 Alta</button>
     <button class="fbtn" onclick="filter(this,'media')">🟡 Media</button>
     <button class="fbtn" onclick="filter(this,'campanas')">Campañas</button>
@@ -242,10 +295,8 @@
     <button class="fbtn" onclick="filter(this,'cs')">Customer Success</button>
   </div>
 
-  <!-- HECHAS -->
-  <div class="pri-section ps-grn" id="sec-hecha">
-    <span class="ps-lbl">🟢 Hechas</span><div class="ps-bar"></div>
-  </div>
+  <!-- ══ HECHAS ══ -->
+  <div class="pri-section ps-grn" id="sec-hecha"><span class="ps-lbl">🟢 Hechas</span><div class="ps-bar"></div></div>
   <div class="req-grid" id="grid-hecha">
 
     <div class="req-card pri-hecha" data-pri="hecha" data-area="campanas" onclick="toggle(this)">
@@ -253,7 +304,34 @@
         <div><div class="req-title">Búsqueda de etiquetas en campañas</div><span class="badge b-hecha">Hecha ✓</span></div>
       </div>
       <div class="req-area">Campañas / UX</div>
-      <div class="req-desc">Campo de búsqueda en el selector de etiquetas que filtra en tiempo real. Búsqueda parcial y case-insensitive. Disponible en producción desde mayo 2026.</div>
+      <div class="req-desc">Campo de búsqueda en selector de etiquetas con filtro en tiempo real. Búsqueda parcial y case-insensitive. Disponible en producción desde mayo 2026.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-hecha" data-pri="hecha" data-area="campanas" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-02</span>
+        <div><div class="req-title">Recarga automática post-difusión</div><span class="badge b-hecha">Hecha ✓</span></div>
+      </div>
+      <div class="req-area">Difusiones / UX</div>
+      <div class="req-desc">Al crear una campaña, la lista se actualiza automáticamente sin reload manual. Confirmado en reunión Ciclo 02 — 18 Jun 2026.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-hecha" data-pri="hecha" data-area="campanas" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-04</span>
+        <div><div class="req-title">Exclusión de leads por etiqueta</div><span class="badge b-hecha">Hecha ✓</span></div>
+      </div>
+      <div class="req-area">Campañas</div>
+      <div class="req-desc">Sección 'Excluir destinatarios' implementada. Lógica: incluidos − excluidos = destinatarios finales. El contador refleja el resultado neto en tiempo real. Confirmado Ciclo 02.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-hecha" data-pri="hecha" data-area="analytics" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-06</span>
+        <div><div class="req-title">Estadísticas de conversaciones</div><span class="badge b-hecha">Hecha ✓</span></div>
+      </div>
+      <div class="req-area">Analytics / IA</div>
+      <div class="req-desc">Dashboard de estadísticas disponible: conversaciones en el período, por canal y por subagente. Pendiente alineación con nuevo prompt del orquestador MIA para métricas por subagente correctas.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
@@ -262,104 +340,79 @@
         <div><div class="req-title">Duplicar campaña individual</div><span class="badge b-hecha">Hecha ✓</span></div>
       </div>
       <div class="req-area">Operaciones</div>
-      <div class="req-desc">Botón 'Duplicar' disponible en campañas finalizadas. Clona configuración completa (plantilla, segmentación, horario) como borrador editable. Confirmado en reunión Ciclo 01.</div>
+      <div class="req-desc">Botón 'Duplicar' en campañas finalizadas. Clona configuración completa como borrador editable. Confirmado Ciclo 01.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
-  </div>
-
-  <!-- ALTA -->
-  <div class="pri-section ps-red" id="sec-alta">
-    <span class="ps-lbl">🔴 Alta prioridad</span><div class="ps-bar"></div>
-  </div>
-  <div class="req-grid" id="grid-alta">
-
-    <div class="req-card pri-alta" data-pri="alta" data-area="campanas" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-04</span>
-        <div><div class="req-title">Exclusión de leads por etiqueta</div><span class="badge b-alta">Alta — estimado lunes 9 Jun</span></div>
+    <div class="req-card pri-hecha" data-pri="hecha" data-area="campanas" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-13</span>
+        <div><div class="req-title">Cambiar plantilla en campaña creada</div><span class="badge b-hecha">Hecha ✓</span></div>
       </div>
       <div class="req-area">Campañas</div>
-      <div class="req-desc">Solo se puede incluir leads, no excluir. Ej: 9,000 leads en taller_cla_05; 800 ya compraron y no deben recibir la campaña. Lógica: incluidos − excluidos = destinatarios finales. Agentiza entrega estimado el lunes 9 Jun.</div>
+      <div class="req-desc">Ya es posible cambiar la plantilla de una campaña en estado Pendiente o Borrador sin recrearla. El resto de la configuración se conserva. Confirmado Ciclo 02.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
+
+  </div>
+
+  <!-- ══ EN DESARROLLO ══ -->
+  <div class="pri-section ps-cyn" id="sec-dev"><span class="ps-lbl">🔵 En desarrollo · Entrega aprox. sem. 25 Jun</span><div class="ps-bar"></div></div>
+  <div class="req-grid" id="grid-dev">
+
+    <div class="req-card pri-dev" data-pri="dev" data-area="campanas" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-03</span>
+        <div><div class="req-title">Botón cancelar / pausar envío</div><span class="badge b-dev">En desarrollo</span></div>
+      </div>
+      <div class="req-area">Difusiones</div>
+      <div class="req-desc">Fernando confirma entrega semana del 25 Jun. Mostrará métricas de enviados vs cancelados al momento de cancelar la campaña.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-dev" data-pri="dev" data-area="analytics" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-05</span>
+        <div><div class="req-title">Métrica de costo por campaña</div><span class="badge b-dev">En desarrollo</span></div>
+      </div>
+      <div class="req-area">Analytics</div>
+      <div class="req-desc">Cálculo: costo del template Meta × mensajes enviados exitosamente. Fernando confirma entrega semana del 25 Jun.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-dev" data-pri="dev" data-area="operaciones cs" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-12</span>
+        <div><div class="req-title">Botones Quick Reply en flujos</div><span class="badge b-dev">En desarrollo</span></div>
+      </div>
+      <div class="req-area">Operaciones / Customer Success</div>
+      <div class="req-desc">Investigación completada — botones soportados. Implementación en flujos e intenciones como acción interactiva. Entrega semana del 25 Jun.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+  </div>
+
+  <!-- ══ ALTA ══ -->
+  <div class="pri-section ps-red" id="sec-alta"><span class="ps-lbl">🔴 Alta prioridad</span><div class="ps-bar"></div></div>
+  <div class="req-grid" id="grid-alta">
 
     <div class="req-card pri-alta" data-pri="alta" data-area="cs" onclick="toggle(this)">
       <div class="req-top"><span class="req-id">REQ-10</span>
-        <div><div class="req-title">Conectar YouTube + TikTok</div><span class="badge b-alta">Alta</span></div>
+        <div><div class="req-title">Conectar YouTube + TikTok (+ Telegram)</div><span class="badge b-alta">Alta · Nueva arquitectura</span></div>
       </div>
       <div class="req-area">Customer Success</div>
-      <div class="req-desc">Agentiza opera en WA, FB e IG. Se necesita integración con YouTube y TikTok para captar y atender leads desde esos canales. Pendiente de viabilidad técnica con Fernando.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
-
-    <div class="req-card pri-alta" data-pri="alta" data-area="operaciones cs" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-12</span>
-        <div><div class="req-title">Botones Quick Reply en flujos</div><span class="badge b-alta">Alta</span></div>
-      </div>
-      <div class="req-area">Operaciones / Customer Success</div>
-      <div class="req-desc">Agregar botones interactivos Quick Reply en flujos de conversación (WA, FB, IG). Reduce fricción del lead y mejora segmentación automática. Límite WA: 3 botones, 20 caracteres c/u.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
-
-    <div class="req-card pri-alta" data-pri="alta" data-area="campanas" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-13</span>
-        <div><div class="req-title">Cambiar plantilla en campaña creada</div><span class="badge b-alta">Alta ↑ — revisión técnica lunes 9 Jun</span></div>
-      </div>
-      <div class="req-area">Campañas</div>
-      <div class="req-desc">No se puede cambiar la plantilla de una campaña ya creada. Zeruya (PM) escaló a Alta: el equipo programa 38–50 campañas/semana. Fernando revisa viabilidad técnica, responde el lunes 9 Jun.</div>
+      <div class="req-desc">Requiere nuevo módulo de gestión de contenido (comentarios ≠ mensajería). YouTube: comentarios de videos. TikTok: mensajería + comentarios. Telegram también en exploración por Agentiza. Es la integración más compleja del roadmap.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
   </div>
 
-  <!-- MEDIA -->
-  <div class="pri-section ps-amb" id="sec-media">
-    <span class="ps-lbl">🟡 Media prioridad</span><div class="ps-bar"></div>
-  </div>
+  <!-- ══ MEDIA ══ -->
+  <div class="pri-section ps-amb" id="sec-media"><span class="ps-lbl">🟡 Media prioridad</span><div class="ps-bar"></div></div>
   <div class="req-grid" id="grid-media">
-
-    <div class="req-card pri-media" data-pri="media" data-area="campanas" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-02</span>
-        <div><div class="req-title">Recarga automática post-difusión</div><span class="badge b-media">Media</span></div>
-      </div>
-      <div class="req-area">Difusiones / UX</div>
-      <div class="req-desc">Al crear una campaña la lista no se actualiza automáticamente. El usuario debe hacer reload manual. Solución: refresh automático en menos de 2 seg sin reload completo.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
-
-    <div class="req-card pri-media" data-pri="media" data-area="campanas" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-03</span>
-        <div><div class="req-title">Botón cancelar / pausar envío</div><span class="badge b-media">Media</span></div>
-      </div>
-      <div class="req-area">Difusiones</div>
-      <div class="req-desc">No existe forma de detener una campaña en curso. Botón 'Cancelar envío' visible solo en estado 'En Proceso', con confirmación previa y registro de quién canceló y a qué hora.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
-
-    <div class="req-card pri-media" data-pri="media" data-area="analytics" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-05</span>
-        <div><div class="req-title">Métrica de costo por campaña</div><span class="badge b-media">Media</span></div>
-      </div>
-      <div class="req-area">Analytics</div>
-      <div class="req-desc">Sin visibilidad del costo monetario por campaña. Mostrar costo estimado y real (mensajes enviados × costo unitario configurable por canal). Exportable. Aviso si no hay tarifa configurada.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
-
-    <div class="req-card pri-media" data-pri="media" data-area="analytics" onclick="toggle(this)">
-      <div class="req-top"><span class="req-id">REQ-06</span>
-        <div><div class="req-title">Conversaciones activas en tiempo real</div><span class="badge b-media">Media</span></div>
-      </div>
-      <div class="req-area">Analytics / IA</div>
-      <div class="req-desc">Sin indicador de conversaciones activas en tiempo real. Dashboard con diferenciación IA vs asesor vs en espera. Refresh ≤30 seg. Tasa de error del bot. Aplica a WA, FB e IG.</div>
-      <div class="expand-hint">↓ clic para ver detalle</div>
-    </div>
 
     <div class="req-card pri-media" data-pri="media" data-area="operaciones" onclick="toggle(this)">
       <div class="req-top"><span class="req-id">REQ-07</span>
         <div><div class="req-title">Capacitaciones y docs de features</div><span class="badge b-media">Media</span></div>
       </div>
       <div class="req-area">Producto / Docs</div>
-      <div class="req-desc">Sin material de apoyo al lanzar funcionalidades. Repositorio con guías, casos de uso y sesiones de inducción. Pendiente: configuración de 'intenciones' en bot y lógica del orquestador.</div>
+      <div class="req-desc">Sin material de apoyo al lanzar funcionalidades. Pendiente urgente: configuración de 'intenciones' en el bot y lógica del bot orquestador.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
@@ -368,25 +421,25 @@
         <div><div class="req-title">Asistente interno conversacional</div><span class="badge b-media">Media · En exploración</span></div>
       </div>
       <div class="req-area">Customer Success / Admisiones</div>
-      <div class="req-desc">Bot interno para CS y Admisiones: (1) consultas on-demand de correos (reembolsos, cambios de horario), (2) reportes automáticos programados. Fernando confirmó viabilidad el 5 Jun. Gus levanta necesidades antes del 18 Jun.</div>
+      <div class="req-desc">Bot interno: consultas on-demand de correos + reportes automáticos programados. Fernando confirmó viabilidad Jun 2026. Gus levanta necesidades antes del 2 Jul.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
-    <div class="req-card pri-media" data-pri="media" data-area="operaciones cs analytics" onclick="toggle(this)">
+    <div class="req-card pri-media" data-pri="media" data-area="analytics cs" onclick="toggle(this)">
       <div class="req-top"><span class="req-id">REQ-14</span>
-        <div><div class="req-title">Reporte por palabra clave y estado de ánimo</div><span class="badge b-media">Media</span></div>
+        <div><div class="req-title">Palabras clave + detección de emoción</div><span class="badge b-media">Media · 2 fases</span></div>
       </div>
-      <div class="req-area">Operaciones / Customer Success</div>
-      <div class="req-desc">Reporte de conversaciones clasificadas por palabra clave configurable (cambio, devolución) y análisis de estado de ánimo (positivo/neutro/negativo). Exportable, filtrando por canal y asesor.</div>
+      <div class="req-area">Analytics / Customer Success</div>
+      <div class="req-desc">Fase 1: exportar data cruda de conversaciones. Fase 2: agente que procesa y genera reportes (temas + emoción). Integrable en Slack u otra herramienta. Sin fecha estimada aún.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
     <div class="req-card pri-media" data-pri="media" data-area="operaciones cs" onclick="toggle(this)">
       <div class="req-top"><span class="req-id">REQ-15</span>
-        <div><div class="req-title">Tiempo de respuesta — derivación asesor</div><span class="badge b-media">Media · En definición</span></div>
+        <div><div class="req-title">Tiempo de respuesta — derivación asesor</div><span class="badge b-media">Media · Ligado REQ-14</span></div>
       </div>
       <div class="req-area">Operaciones / Customer Success</div>
-      <div class="req-desc">Medir tiempo desde estado 'Ayuda especializada' hasta primer mensaje del asesor. Facundo confirmó que los datos ya existen en BD. Filtrable por asesor. Primera iteración acotada, se amplía en ciclos futuros.</div>
+      <div class="req-desc">Mide desde estado 'Ayuda especializada' hasta primer mensaje del asesor. Datos ya existen en BD. Va ligado a Fase 2 del agente de data (REQ-14).</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
@@ -395,16 +448,32 @@
         <div><div class="req-title">Duplicar campañas en lote</div><span class="badge b-nuevo">Nuevo · Ciclo 01</span></div>
       </div>
       <div class="req-area">Operaciones</div>
-      <div class="req-desc">Complementa REQ-08. Selección múltiple mediante checkboxes + acción 'Duplicar seleccionadas'. Hasta 20 campañas por operación. Creadas como borradores. Reduce ~2 horas a minutos en lanzamientos.</div>
+      <div class="req-desc">Complementa REQ-08. Checkboxes + 'Duplicar seleccionadas'. Hasta 20 campañas por operación. Reduce ~2 horas a minutos en lanzamientos.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-media" data-pri="media" data-area="operaciones cs" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-17</span>
+        <div><div class="req-title">Replicación de mensajes Meta → Agentiza</div><span class="badge b-nuevo">Nuevo · Ciclo 02</span></div>
+      </div>
+      <div class="req-area">Operaciones / Customer Success</div>
+      <div class="req-desc">Ciertos tipos de mensajes de Meta no se replican en Agentiza. Gus recopila screenshots con equipo CS para identificar qué tipos necesitan integración. Entregable antes del 2 Jul.</div>
+      <div class="expand-hint">↓ clic para ver detalle</div>
+    </div>
+
+    <div class="req-card pri-media" data-pri="media" data-area="operaciones" onclick="toggle(this)">
+      <div class="req-top"><span class="req-id">REQ-18</span>
+        <div><div class="req-title">Multi-producto Hotmart (Gira Eduardo)</div><span class="badge b-nuevo">Nuevo · Ciclo 02</span></div>
+      </div>
+      <div class="req-area">Operaciones / Make</div>
+      <div class="req-desc">11 ciudades → 1 bot con subagentes por ciudad. Orquestador asigna subagente según ciudad del lead. Coordinación con Gastón para flujo Make. Reunión a programar antes del 2 Jul.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
   </div>
 
-  <!-- POR DEFINIR -->
-  <div class="pri-section ps-gry" id="sec-pend">
-    <span class="ps-lbl">⚪ Por definir</span><div class="ps-bar"></div>
-  </div>
+  <!-- ══ POR DEFINIR ══ -->
+  <div class="pri-section ps-gry" id="sec-pend"><span class="ps-lbl">⚪ Por definir</span><div class="ps-bar"></div></div>
   <div class="req-grid" id="grid-pend">
 
     <div class="req-card pri-pend" data-pri="pend" data-area="operaciones cs" onclick="toggle(this)">
@@ -412,7 +481,7 @@
         <div><div class="req-title">Revisión de métricas actuales del dashboard</div><span class="badge b-pend">Por definir</span></div>
       </div>
       <div class="req-area">Operaciones / Customer Success</div>
-      <div class="req-desc">Revisar el estado actual de las métricas del dashboard: cuáles existen, cuáles son incorrectas, cuáles faltan. Levantamiento a definir con Gus, Zeruya y el equipo de CS en próxima sesión.</div>
+      <div class="req-desc">Revisar qué métricas existen, cuáles son incorrectas y cuáles faltan. Levantamiento pendiente con Gus, Zeruya y equipo de CS.</div>
       <div class="expand-hint">↓ clic para ver detalle</div>
     </div>
 
@@ -422,57 +491,44 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    <div class="footer-l"><strong>Gus Torres</strong> · Academia de IA × Agentiza<br>Documento interno — Ciclo 01 · 5 junio 2026</div>
+    <div class="footer-l"><strong>Gus Torres</strong> · Academia de IA × Agentiza<br>Ciclo 02 · 18 junio 2026 · Próxima reunión: 2 Jul 2026</div>
     <div class="footer-r">
-      <span class="tag">16 REQs</span>
+      <span class="tag">19 REQs</span>
+      <span class="tag">6 Hechas ✓</span>
       <span class="tag">WA · FB · IG</span>
-      <span class="tag">Próx. reunión: 18 Jun</span>
-      <span class="tag">v2.0</span>
+      <span class="tag">v4.0</span>
     </div>
   </div>
 
 </div>
-
 <script>
-function toggle(el) { el.classList.toggle('expanded'); }
-
-function filter(btn, f) {
-  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+function toggle(el){ el.classList.toggle('expanded'); }
+function filter(btn,f){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  let visible = 0;
-  // Secciones a mostrar/ocultar
-  const sections = {
-    'hecha': ['sec-hecha','grid-hecha'],
-    'alta':  ['sec-alta', 'grid-alta'],
-    'media': ['sec-media','grid-media'],
-    'pend':  ['sec-pend', 'grid-pend'],
-  };
-  if (f === 'all') {
-    Object.values(sections).flat().forEach(id => {
-      const el = document.getElementById(id);
-      if(el) el.style.display = '';
+  const secs={hecha:['sec-hecha','grid-hecha'],dev:['sec-dev','grid-dev'],alta:['sec-alta','grid-alta'],media:['sec-media','grid-media'],pend:['sec-pend','grid-pend']};
+  let visible=0;
+  if(f==='all'){
+    Object.values(secs).flat().forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='';});
+    document.querySelectorAll('.req-card').forEach(c=>{c.classList.remove('hidden');visible++;});
+  } else if(['hecha','dev','alta','media','pend'].includes(f)){
+    Object.entries(secs).forEach(([k,ids])=>{
+      ids.forEach(id=>{const e=document.getElementById(id);if(e)e.style.display=k===f?'':'none';});
     });
-    document.querySelectorAll('.req-card').forEach(c => { c.classList.remove('hidden'); visible++; });
-  } else if (['hecha','alta','media','pend'].includes(f)) {
-    Object.entries(sections).forEach(([key, ids]) => {
-      const show = key === f;
-      ids.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = show ? '' : 'none'; });
-    });
-    document.querySelectorAll('.req-card').forEach(c => {
-      const show = c.dataset.pri === f;
-      c.classList.toggle('hidden', !show);
-      if(show) visible++;
+    document.querySelectorAll('.req-card').forEach(c=>{
+      const show=c.dataset.pri===f;
+      c.classList.toggle('hidden',!show);
+      if(show)visible++;
     });
   } else {
-    // filtro por área — mostrar todas las secciones
-    Object.values(sections).flat().forEach(id => { const el = document.getElementById(id); if(el) el.style.display = ''; });
-    document.querySelectorAll('.req-card').forEach(c => {
-      const show = (c.dataset.area || '').includes(f);
-      c.classList.toggle('hidden', !show);
-      if(show) visible++;
+    Object.values(secs).flat().forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='';});
+    document.querySelectorAll('.req-card').forEach(c=>{
+      const show=(c.dataset.area||'').includes(f);
+      c.classList.toggle('hidden',!show);
+      if(show)visible++;
     });
   }
-  document.getElementById('empty').style.display = visible === 0 ? 'block' : 'none';
+  document.getElementById('empty').style.display=visible===0?'block':'none';
 }
 </script>
 </body>
