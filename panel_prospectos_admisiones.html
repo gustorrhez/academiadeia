@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Panel de Prospectos · Gira LATAM 2026 (Google Sheets)</title>
+<style>
+  :root{
+    --bg:#0A0A0B; --panel:#141416; --panel-2:#1B1B1E; --border:#28282C;
+    --text:#EDEDEF; --muted:#8A8A92; --orange:#FF6A3D; --blue:#4D8CFF;
+    --green:#3ECF8E; --yellow:#E8C547; --red:#FF5C5C;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); padding:28px;}
+  .stripe{height:4px; width:64px; background:linear-gradient(90deg,var(--red),var(--blue)); border-radius:2px; margin-bottom:14px;}
+  .eyebrow{color:var(--orange); font-size:12px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase;}
+  h1{font-size:34px; font-weight:800; letter-spacing:0.5px; text-transform:uppercase; margin:6px 0 8px 0;}
+  .subtitle{color:var(--muted); font-size:14px; max-width:640px; line-height:1.5; margin-bottom:20px;}
+
+  .setup{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:20px; display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;}
+  .setup .field{display:flex; flex-direction:column; gap:5px; flex:1; min-width:280px;}
+  .setup label{font-size:10.5px; color:var(--muted); letter-spacing:1.2px; text-transform:uppercase; font-weight:700;}
+  .setup-note{font-size:11.5px; color:var(--muted); width:100%;}
+
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px;}
+  .stat{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:18px 20px;}
+  .stat .num{font-size:30px; font-weight:800;}
+  .stat .label{font-size:11px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:4px;}
+  .stat.contactado .num{color:var(--yellow);}
+  .stat.respondio .num{color:var(--blue);}
+  .stat.compro .num{color:var(--green);}
+
+  .toolbar{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px 18px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;}
+  .field{display:flex; flex-direction:column; gap:5px;}
+  .field label{font-size:10.5px; color:var(--muted); letter-spacing:1.2px; text-transform:uppercase; font-weight:700;}
+  input[type=text], select{background:var(--panel-2); border:1px solid var(--border); color:var(--text); padding:9px 11px; border-radius:7px; font-size:13px; min-width:150px;}
+  input[type=text]{min-width:230px;}
+  input[type=text]:focus, select:focus{outline:1px solid var(--orange);}
+  .btn{background:var(--panel-2); border:1px solid var(--border); color:var(--text); padding:9px 14px; border-radius:7px; font-size:12.5px; font-weight:700; cursor:pointer; letter-spacing:0.4px;}
+  .btn:hover{border-color:var(--orange);}
+  .btn.primary{background:var(--orange); border-color:var(--orange); color:#1a0d06;}
+  .count-note{font-size:12px; color:var(--muted); margin-left:auto;}
+
+  table{width:100%; border-collapse:collapse; background:var(--panel); border:1px solid var(--border); border-radius:10px; overflow:hidden;}
+  thead th{background:#1A1A1C; text-align:left; font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); padding:11px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
+  tbody td{padding:11px 12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#18181B;}
+  .name{font-weight:700;}
+  .muted{color:var(--muted); font-size:12px;}
+  .num-pill{display:inline-block; background:#241407; color:var(--orange); border-radius:20px; padding:2px 10px; font-weight:800; font-size:12px;}
+  .status-cell{display:flex; gap:6px; flex-wrap:wrap;}
+  .pill{border:1px solid var(--border); background:var(--panel-2); color:var(--muted); border-radius:20px; padding:4px 10px; font-size:11px; font-weight:700; cursor:pointer; user-select:none; white-space:nowrap;}
+  .pill.on.contactado{background:#3A2E0C; border-color:var(--yellow); color:var(--yellow);}
+  .pill.on.respondio{background:#132A4D; border-color:var(--blue); color:var(--blue);}
+  .pill.on.compro{background:#0F3A2A; border-color:var(--green); color:var(--green);}
+  select.vendedor{min-width:130px; font-size:12px; padding:6px 8px;}
+  .empty{padding:40px; text-align:center; color:var(--muted);}
+  .footnote{margin-top:14px; font-size:11.5px; color:var(--muted); line-height:1.5;}
+  .saving{font-size:11px; color:var(--orange); font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="stripe"></div>
+<div class="eyebrow">Gira LATAM 2026 · Campaña pre-preventa</div>
+<h1>Panel de Prospectos</h1>
+<div class="subtitle">Compradores con 3 o más cursos comprados entre 2024 y 2026, con actividad en los últimos 6 meses. El estatus se guarda directamente en tu Google Sheet: todo el equipo ve lo mismo en tiempo real.</div>
+
+<div class="setup">
+  <div class="field">
+    <label>URL de la Apps Script (Google Sheets)</label>
+    <input type="text" id="webapp-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec">
+  </div>
+  <button class="btn primary" id="btn-connect">Conectar</button>
+  <button class="btn" id="btn-refresh">Actualizar datos</button>
+  <span class="saving" id="saving-note"></span>
+  <div class="setup-note">Pega aquí la URL que te da Apps Script al implementar (ver instrucciones en el archivo AppsScript_Prospectos_GiraLATAM.gs). Se guarda en este navegador para no tener que pegarla cada vez.</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num" id="stat-total">0</div><div class="label">Prospectos</div></div>
+  <div class="stat contactado"><div class="num" id="stat-contactado">0</div><div class="label">Contactados</div></div>
+  <div class="stat respondio"><div class="num" id="stat-respondio">0</div><div class="label">Respondieron</div></div>
+  <div class="stat compro"><div class="num" id="stat-compro">0</div><div class="label">Compraron</div></div>
+</div>
+
+<div class="toolbar">
+  <div class="field">
+    <label>Buscar</label>
+    <input type="text" id="f-search" placeholder="Nombre, email o teléfono...">
+  </div>
+  <div class="field">
+    <label>País</label>
+    <select id="f-pais"><option value="">Todos</option></select>
+  </div>
+  <div class="field">
+    <label>Vendedor</label>
+    <select id="f-vendedor"><option value="">Todos</option></select>
+  </div>
+  <div class="field">
+    <label>Estatus</label>
+    <select id="f-status">
+      <option value="">Todos</option>
+      <option value="sin_contactar">Sin contactar</option>
+      <option value="contactado">Contactado</option>
+      <option value="respondio">Respondió</option>
+      <option value="compro">Compró</option>
+    </select>
+  </div>
+  <div class="count-note" id="result-count"></div>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Contacto</th>
+      <th>País</th>
+      <th>Cursos</th>
+      <th>Vendedor</th>
+      <th>Estatus</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+<div class="empty" id="empty-state" style="display:none;">Pega la URL de tu Apps Script arriba y da clic en "Conectar" para cargar los prospectos.</div>
+
+<div class="footnote">
+  Fuente: exportes de Hotmart, mayo 2024 a junio 2026. Se muestran los contactos con 3 o más cursos acumulados en toda la historia y con al menos una compra en los últimos 6 meses. El estatus y el vendedor se guardan directamente en tu hoja de Google Sheets: cualquiera con acceso al panel ve y edita lo mismo en tiempo real.
+</div>
+
+<script>
+const VENDEDORES = ['Sin asignar','Edith Estrada','Junior Torrez','Angélica Bou','Wladimir Irazzoky','Andrés Mantilla'];
+const URL_KEY = 'gira_latam_webapp_url';
+
+let DATA = [];
+
+function getWebAppUrl(){
+  return document.getElementById('webapp-url').value.trim();
+}
+
+function loadSavedUrl(){
+  const saved = localStorage.getItem(URL_KEY);
+  if(saved) document.getElementById('webapp-url').value = saved;
+}
+
+async function fetchData(){
+  const url = getWebAppUrl();
+  if(!url) return;
+  localStorage.setItem(URL_KEY, url);
+  document.getElementById('tbody').innerHTML = '<tr><td colspan="6" class="empty">Cargando...</td></tr>';
+  try{
+    const res = await fetch(url);
+    const json = await res.json();
+    DATA = json.map(r => ({
+      email: r.Email || '',
+      nombre: r.Nombre || '',
+      telefono: r.Telefono || '',
+      pais: r.Pais || '',
+      ciudad: r.Ciudad || '',
+      cursos: Number(r.Cursos) || 0,
+      vendedor: r.Vendedor || 'Sin asignar',
+      contactado: String(r.Contactado).toUpperCase() === 'TRUE',
+      respondio: String(r.Respondio).toUpperCase() === 'TRUE',
+      compro: String(r.Compro).toUpperCase() === 'TRUE',
+    }));
+    initFilters();
+    updateStats();
+    render();
+  }catch(e){
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="6" class="empty">No se pudo cargar. Revisa la URL y que la implementación tenga acceso "Cualquier usuario".</td></tr>';
+    console.error(e);
+  }
+}
+
+async function updateRemote(email, patch){
+  const url = getWebAppUrl();
+  if(!url) return;
+  const note = document.getElementById('saving-note');
+  note.textContent = 'Guardando...';
+  try{
+    await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(Object.assign({email: email}, patch))
+    });
+    note.textContent = 'Guardado ✓';
+    setTimeout(()=>{note.textContent='';}, 1500);
+  }catch(e){
+    note.textContent = 'Error al guardar';
+    console.error(e);
+  }
+}
+
+function fillSelect(id, values){
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  sel.innerHTML = sel.id === 'f-pais' ? '<option value="">Todos</option>' : '<option value="">Todos</option>';
+  values.forEach(v=>{
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    sel.appendChild(opt);
+  });
+  sel.value = current;
+}
+
+function initFilters(){
+  const paises = [...new Set(DATA.map(c=>c.pais).filter(Boolean))].sort();
+  fillSelect('f-pais', paises);
+  fillSelect('f-vendedor', VENDEDORES);
+}
+
+function matchesFilters(c){
+  const search = document.getElementById('f-search').value.trim().toLowerCase();
+  const pais = document.getElementById('f-pais').value;
+  const vendedor = document.getElementById('f-vendedor').value;
+  const status = document.getElementById('f-status').value;
+
+  if(search){
+    const blob = (c.nombre+' '+c.email+' '+c.telefono).toLowerCase();
+    if(!blob.includes(search)) return false;
+  }
+  if(pais && c.pais !== pais) return false;
+  if(vendedor && c.vendedor !== vendedor) return false;
+  if(status){
+    if(status==='sin_contactar' && (c.contactado||c.respondio||c.compro)) return false;
+    if(status==='contactado' && !c.contactado) return false;
+    if(status==='respondio' && !c.respondio) return false;
+    if(status==='compro' && !c.compro) return false;
+  }
+  return true;
+}
+
+function updateStats(){
+  document.getElementById('stat-total').textContent = DATA.length;
+  document.getElementById('stat-contactado').textContent = DATA.filter(c=>c.contactado).length;
+  document.getElementById('stat-respondio').textContent = DATA.filter(c=>c.respondio).length;
+  document.getElementById('stat-compro').textContent = DATA.filter(c=>c.compro).length;
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function render(){
+  const tbody = document.getElementById('tbody');
+  const filtered = DATA.filter(matchesFilters);
+  document.getElementById('result-count').textContent = filtered.length + ' de ' + DATA.length + ' prospectos';
+  document.getElementById('empty-state').style.display = (filtered.length || DATA.length===0) ? 'none' : 'block';
+
+  tbody.innerHTML = filtered.map((c, i)=>{
+    return `<tr>
+      <td class="muted">${i+1}</td>
+      <td>
+        <div class="name">${escapeHtml(c.nombre||'(Sin nombre)')}</div>
+        <div class="muted">${escapeHtml(c.email)}</div>
+        <div class="muted">${escapeHtml(c.telefono||'—')}</div>
+      </td>
+      <td>${escapeHtml(c.pais||'—')}<div class="muted">${escapeHtml(c.ciudad||'')}</div></td>
+      <td><span class="num-pill">${c.cursos}</span></td>
+      <td><select class="vendedor" data-email="${c.email}">${VENDEDORES.map(v=>`<option value="${v}" ${c.vendedor===v?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td>
+        <div class="status-cell">
+          <span class="pill ${c.contactado?'on contactado':''}" data-email="${c.email}" data-key="Contactado">Contactado</span>
+          <span class="pill ${c.respondio?'on respondio':''}" data-email="${c.email}" data-key="Respondio">Respondió</span>
+          <span class="pill ${c.compro?'on compro':''}" data-email="${c.email}" data-key="Compro">Compró</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.pill').forEach(el=>{
+    el.addEventListener('click', async ()=>{
+      const email = el.dataset.email, key = el.dataset.key;
+      const record = DATA.find(d=>d.email===email);
+      const propMap = {Contactado:'contactado', Respondio:'respondio', Compro:'compro'};
+      const prop = propMap[key];
+      record[prop] = !record[prop];
+      const patch = {}; patch[key] = record[prop] ? 'TRUE' : 'FALSE';
+      await updateRemote(email, patch);
+      updateStats();
+      render();
+    });
+  });
+  tbody.querySelectorAll('select.vendedor').forEach(el=>{
+    el.addEventListener('change', async ()=>{
+      const email = el.dataset.email;
+      const record = DATA.find(d=>d.email===email);
+      record.vendedor = el.value;
+      await updateRemote(email, {Vendedor: el.value});
+    });
+  });
+}
+
+['f-search','f-pais','f-vendedor','f-status'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+document.getElementById('btn-connect').addEventListener('click', fetchData);
+document.getElementById('btn-refresh').addEventListener('click', fetchData);
+
+loadSavedUrl();
+if(getWebAppUrl()) fetchData();
+</script>
+</body>
+</html>
