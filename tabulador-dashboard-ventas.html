@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tabulador de precios</title>
+<style>
+  :root { --bg:#0f1420; --card:#171e2e; --line:#2a3550; --text:#e6ebf5; --muted:#8a97b5; --accent:#4f8cff; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; font-weight:600; }
+  .meta { color:var(--muted); font-size:13px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
+  button:hover { opacity:.9; }
+  .wrap { padding:24px; overflow-x:auto; }
+  table { border-collapse:collapse; width:100%; background:var(--card); border-radius:10px; overflow:hidden; }
+  th,td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); font-size:14px; white-space:nowrap; }
+  th { background:#1d2740; color:var(--muted); text-transform:uppercase; font-size:11px; letter-spacing:.04em; position:sticky; top:0; }
+  tr:last-child td { border-bottom:0; }
+  tr:hover td { background:rgba(79,140,255,.06); }
+  .status { padding:24px; color:var(--muted); }
+  .err { color:#ff7a7a; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tabulador de precios</h1>
+  <span class="meta" id="meta">Cargando&hellip;</span>
+  <button id="refresh">Actualizar</button>
+</header>
+<div class="wrap"><div id="content" class="status">Cargando&hellip;</div></div>
+<script>
+  // -- CONFIGURA AQUI --------------------------------------------
+  // Pega la URL de tu Google Sheet PUBLICADO EN LA WEB como CSV:
+  // Archivo -> Compartir -> Publicar en la web -> (elige la hoja) -> CSV
+  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOr6dTaQEvkPzOY8rTUVNzxcAO53x9kLeTyXP1Fv_G-xJvmM7eNaRyzmlawRcH3w/pub?gid=450868421&single=true&output=csv";
+  const AUTO_REFRESH_SECONDS = 60; // 0 para desactivar
+  // --------------------------------------------------------------
+
+  function parseCSV(text){
+    const rows=[]; let row=[], field="", i=0, q=false;
+    while(i<text.length){
+      const c=text[i];
+      if(q){
+        if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; }
+        else field+=c;
+      } else {
+        if(c==='"') q=true;
+        else if(c===','){ row.push(field); field=""; }
+        else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+        else if(c==='\r'){}
+        else field+=c;
+      }
+      i++;
+    }
+    if(field.length||row.length){ row.push(field); rows.push(row); }
+    return rows.filter(r=>r.some(c=>c.trim()!==""));
+  }
+
+  function esc(s){ return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+  function render(rows){
+    const content=document.getElementById("content");
+    const meta=document.getElementById("meta");
+    if(!rows.length){ content.className="status"; content.textContent="El Sheet esta vacio."; meta.textContent="0 filas"; return; }
+    const head=rows[0], body=rows.slice(1);
+    let html='<table><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
+    html+=body.map(r=>'<tr>'+head.map((_,c)=>'<td>'+esc(r[c]||"")+'</td>').join('')+'</tr>').join('');
+    html+='</tbody></table>';
+    content.className=""; content.innerHTML=html;
+    meta.textContent=body.length+" filas - actualizado "+new Date().toLocaleTimeString('es');
+  }
+
+  async function load(){
+    const content=document.getElementById("content");
+    const meta=document.getElementById("meta");
+    if(SHEET_CSV_URL.indexOf("PEGA_AQUI")===0){
+      content.className="status err"; content.textContent="Falta configurar SHEET_CSV_URL en el HTML."; meta.textContent=""; return;
+    }
+    try{
+      const bust=(SHEET_CSV_URL.indexOf('?')>=0?'&':'?')+'_t='+Date.now();
+      const res=await fetch(SHEET_CSV_URL+bust);
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      render(parseCSV(await res.text()));
+    }catch(e){
+      content.className="status err"; content.textContent="No se pudo cargar el Sheet: "+e.message; meta.textContent="";
+    }
+  }
+
+  document.getElementById("refresh").addEventListener("click", load);
+  load();
+  if(AUTO_REFRESH_SECONDS>0) setInterval(load, AUTO_REFRESH_SECONDS*1000);
+</script>
+</body>
+</html>
