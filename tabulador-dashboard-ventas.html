@@ -1,96 +1,352 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tabulador de precios</title>
-<style>
-  :root { --bg:#0f1420; --card:#171e2e; --line:#2a3550; --text:#e6ebf5; --muted:#8a97b5; --accent:#4f8cff; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); }
-  header { padding:20px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-  header h1 { font-size:18px; margin:0; font-weight:600; }
-  .meta { color:var(--muted); font-size:13px; }
-  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 14px; font-size:13px; cursor:pointer; }
-  button:hover { opacity:.9; }
-  .wrap { padding:24px; overflow-x:auto; }
-  table { border-collapse:collapse; width:100%; background:var(--card); border-radius:10px; overflow:hidden; }
-  th,td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); font-size:14px; white-space:nowrap; }
-  th { background:#1d2740; color:var(--muted); text-transform:uppercase; font-size:11px; letter-spacing:.04em; position:sticky; top:0; }
-  tr:last-child td { border-bottom:0; }
-  tr:hover td { background:rgba(79,140,255,.06); }
-  .status { padding:24px; color:var(--muted); }
-  .err { color:#ff7a7a; }
-</style>
+<script src="./support.js"></script>
 </head>
 <body>
-<header>
-  <h1>Tabulador de precios</h1>
-  <span class="meta" id="meta">Cargando&hellip;</span>
-  <button id="refresh">Actualizar</button>
-</header>
-<div class="wrap"><div id="content" class="status">Cargando&hellip;</div></div>
-<script>
-  // -- CONFIGURA AQUI --------------------------------------------
-  // Pega la URL de tu Google Sheet PUBLICADO EN LA WEB como CSV:
-  // Archivo -> Compartir -> Publicar en la web -> (elige la hoja) -> CSV
-  const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOr6dTaQEvkPzOY8rTUVNzxcAO53x9kLeTyXP1Fv_G-xJvmM7eNaRyzmlawRcH3w/pub?gid=450868421&single=true&output=csv";
-  const AUTO_REFRESH_SECONDS = 60; // 0 para desactivar
-  // --------------------------------------------------------------
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/academia-de-ia-design-system-8731a462-775f-4a24-ba7b-594a09a0135d/colors_and_type.css">
+  <script src="_ds/academia-de-ia-design-system-8731a462-775f-4a24-ba7b-594a09a0135d/_ds_bundle.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    html,body{background:#FAFAFA;}
+    ::-webkit-scrollbar{height:10px;width:10px;}
+    ::-webkit-scrollbar-thumb{background:#BABABA;border-radius:99px;}
+    ::-webkit-scrollbar-track{background:#F4F4F4;}
+    @keyframes spin{ to { transform:rotate(360deg); } }
+    input,select,button{box-sizing:border-box;}
+    @media (max-width:900px){
+      .tb-header-row{align-items:stretch;}
+      .tb-controls{width:100%;}
+      .tb-controls input[type="search"]{max-width:none;min-width:0;flex:1 1 100%;}
+      .tb-actions{width:100%;}
+      .tb-actions button{flex:1;}
+    }
+    @media (max-width:640px){
+      .tb-header-pad{padding:12px 16px;}
+      .tb-main-pad{padding:16px;}
+      .tb-controls select,.tb-controls input[type="date"]{flex:1 1 auto;min-width:0;}
+      table th,table td{padding:8px 10px;font-size:12.5px;}
+    }
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#FAFAFA;font-family:var(--font-sans);">
+  <header class="tb-header-pad" style="position:sticky;top:0;z-index:20;background:#FFFFFF;border-bottom:1px solid #E4EAF3;padding:16px 24px;">
+    <div class="tb-header-row" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;max-width:1440px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <img src="assets/logo-blue.png" alt="Academia de IA" style="height:28px;width:auto;flex:none;">
+        <div style="width:1px;height:24px;background:#E4EAF3;flex:none;"></div>
+        <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0000FF,#00B9FF);display:flex;align-items:center;justify-content:center;flex:none;">
+          <i data-lucide="layout-dashboard" style="width:18px;height:18px;color:#fff;"></i>
+        </div>
+        <div style="min-width:0;">
+          <div style="font-size:16px;font-weight:600;color:#1A1E25;line-height:1.2;">Tabulador de ventas</div>
+          <div style="font-size:12px;color:#76777A;line-height:1.4;">{{ metaText }}</div>
+        </div>
+      </div>
+      <div class="tb-controls" style="flex:1;min-width:220px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="position:relative;flex:1;min-width:220px;max-width:360px;">
+          <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#76777A;pointer-events:none;"></i>
+          <input type="search" placeholder="Buscar transaccion, producto, cupon, nombre..." value="{{ query }}" oninput="{{ onSearch }}" style="width:100%;background:#FAFAFA;border:1px solid #E4EAF3;color:#1A1E25;border-radius:8px;padding:9px 14px 9px 34px;font-size:14px;font-family:var(--font-sans);outline:none;">
+        </div>
+        <select value="{{ filterCol }}" onchange="{{ onColChange }}" style="background:#FAFAFA;border:1px solid #E4EAF3;color:#364153;border-radius:8px;padding:9px 10px;font-size:13px;font-family:var(--font-sans);">
+          <option value="-1">Todas las columnas</option>
+          <sc-for list="{{ filterColOptions }}" as="opt" hint-placeholder-count="0">
+            <option value="{{ opt.value }}">{{ opt.label }}</option>
+          </sc-for>
+        </select>
+        <sc-if value="{{ hasDateCol }}" hint-placeholder-val="{{ false }}">
+          <input type="date" value="{{ dateFrom }}" onchange="{{ onDateFromChange }}" style="background:#FAFAFA;border:1px solid #E4EAF3;color:#364153;border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font-sans);">
+          <span style="color:#BABABA;font-size:13px;">–</span>
+          <input type="date" value="{{ dateTo }}" onchange="{{ onDateToChange }}" style="background:#FAFAFA;border:1px solid #E4EAF3;color:#364153;border-radius:8px;padding:8px 10px;font-size:13px;font-family:var(--font-sans);">
+        </sc-if>
+      </div>
+      <div class="tb-actions" style="display:flex;gap:10px;flex:none;">
+        <button onclick="{{ onDownloadCSV }}" style="background:transparent;border:1px solid #E4EAF3;color:#1A1E25;border-radius:8px;padding:9px 18px 9px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;display:flex;align-items:center;gap:7px;">
+          <i data-lucide="download" style="width:14px;height:14px;"></i> Descargar CSV
+        </button>
+        <button onclick="{{ onRefresh }}" style="background:#0000FF;border:0;color:#fff;border-radius:8px;padding:9px 18px 9px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;display:flex;align-items:center;gap:7px;">
+          <i data-lucide="{{ refreshIcon }}" style="width:14px;height:14px;{{ refreshIconStyle }}"></i> {{ refreshLabel }}
+        </button>
+      </div>
+    </div>
+  </header>
 
-  function parseCSV(text){
-    const rows=[]; let row=[], field="", i=0, q=false;
-    while(i<text.length){
-      const c=text[i];
-      if(q){
-        if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; }
-        else field+=c;
-      } else {
-        if(c==='"') q=true;
-        else if(c===','){ row.push(field); field=""; }
-        else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=""; }
-        else if(c==='\r'){}
-        else field+=c;
+  <div class="tb-main-pad" style="max-width:1440px;margin:0 auto;padding:24px;">
+    <sc-if value="{{ hasSummary }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:20px;">
+        <sc-for list="{{ summaryCards }}" as="card" hint-placeholder-count="4">
+          <div style="background:#fff;border:1px solid #E4EAF3;border-left:3px solid {{ card.color }};border-radius:16px;padding:20px 22px;box-shadow:0 2px 4px rgba(10,10,10,0.06),0 1px 2px rgba(10,10,10,0.04);display:flex;gap:14px;align-items:flex-start;">
+            <div style="width:40px;height:40px;border-radius:12px;background:{{ card.bg }};display:flex;align-items:center;justify-content:center;flex:none;">
+              <i data-lucide="{{ card.icon }}" style="width:19px;height:19px;color:{{ card.color }};"></i>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#76777A;margin-bottom:6px;">{{ card.label }}</div>
+              <div style="font-size:26px;font-weight:700;color:{{ card.color }};line-height:1.1;">{{ card.value }}</div>
+              <sc-if value="{{ card.sub }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:12px;color:#76777A;margin-top:4px;">{{ card.sub }}</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showError }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E4EAF3;border-radius:16px;padding:48px;text-align:center;color:#FF0000;font-size:14px;">{{ errorMsg }}</div>
+    </sc-if>
+
+    <sc-if value="{{ showLoading }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff;border:1px solid #E4EAF3;border-radius:16px;padding:64px;text-align:center;color:#76777A;font-size:14px;">
+        <div style="width:28px;height:28px;border:3px solid #E4EAF3;border-top-color:#0000FF;border-radius:50%;margin:0 auto 16px;animation:spin 0.8s linear infinite;"></div>
+        Cargando datos del Sheet...
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E4EAF3;border-radius:16px;padding:48px;text-align:center;color:#76777A;font-size:14px;">No hay filas que coincidan con los filtros actuales.</div>
+    </sc-if>
+
+    <sc-if value="{{ showTable }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #E4EAF3;border-radius:16px;overflow:auto;box-shadow:0 2px 4px rgba(10,10,10,0.06),0 1px 2px rgba(10,10,10,0.04);max-height:calc(100vh - 260px);">
+        <table style="border-collapse:collapse;width:100%;">
+          <thead>
+            <tr>
+              <sc-for list="{{ headers }}" as="h" hint-placeholder-count="6">
+                <th onclick="{{ h.onClick }}" style="text-align:left;padding:10px 16px;background:#EAF0FF;color:#00028F;text-transform:uppercase;font-size:11px;letter-spacing:0.06em;font-weight:600;white-space:nowrap;position:sticky;top:0;cursor:pointer;user-select:none;border-bottom:1px solid #E4EAF3;">
+                  {{ h.label }} <span style="color:#0000FF;font-size:9px;">{{ h.arrow }}</span>
+                </th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody style="background:#fff;">
+            <sc-for list="{{ rows }}" as="row" hint-placeholder-count="8">
+              <tr style="{{ row.rowStyle }}">
+                <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="6">
+                  <td style="{{ cell.style }}">{{ cell.node }}</td>
+                </sc-for>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </sc-if>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    head: [], body: [], query: "", filterCol: -1, dateFrom: "", dateTo: "",
+    sortCol: -1, sortDir: 1, loading: true, error: "", lastUpdated: null, refreshing: false
+  };
+
+  componentDidMount() {
+    this.load();
+    this._timer = setInterval(() => this.load(), 60000);
+    this.drawIcons();
+  }
+  componentDidUpdate() { this.drawIcons(); }
+  componentWillUnmount() { if (this._timer) clearInterval(this._timer); }
+  drawIcons() { if (window.lucide) window.lucide.createIcons(); }
+
+  norm(s) { return String(s == null ? "" : s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  esc(s) { return String(s); }
+
+  findCol(head, terms) {
+    return head.findIndex(h => { const n = this.norm(h); return terms.some(t => n.includes(t)); });
+  }
+
+  parseCSV(text) {
+    const rows = []; let row = [], field = "", i = 0, q = false;
+    while (i < text.length) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; }
+      else {
+        if (c === '"') q = true;
+        else if (c === ',') { row.push(field); field = ""; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c === '\r') {}
+        else field += c;
       }
       i++;
     }
-    if(field.length||row.length){ row.push(field); rows.push(row); }
-    return rows.filter(r=>r.some(c=>c.trim()!==""));
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(c => c.trim() !== ""));
   }
 
-  function esc(s){ return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
-
-  function render(rows){
-    const content=document.getElementById("content");
-    const meta=document.getElementById("meta");
-    if(!rows.length){ content.className="status"; content.textContent="El Sheet esta vacio."; meta.textContent="0 filas"; return; }
-    const head=rows[0], body=rows.slice(1);
-    let html='<table><thead><tr>'+head.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>';
-    html+=body.map(r=>'<tr>'+head.map((_,c)=>'<td>'+esc(r[c]||"")+'</td>').join('')+'</tr>').join('');
-    html+='</tbody></table>';
-    content.className=""; content.innerHTML=html;
-    meta.textContent=body.length+" filas - actualizado "+new Date().toLocaleTimeString('es');
-  }
-
-  async function load(){
-    const content=document.getElementById("content");
-    const meta=document.getElementById("meta");
-    if(SHEET_CSV_URL.indexOf("PEGA_AQUI")===0){
-      content.className="status err"; content.textContent="Falta configurar SHEET_CSV_URL en el HTML."; meta.textContent=""; return;
-    }
-    try{
-      const bust=(SHEET_CSV_URL.indexOf('?')>=0?'&':'?')+'_t='+Date.now();
-      const res=await fetch(SHEET_CSV_URL+bust);
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      render(parseCSV(await res.text()));
-    }catch(e){
-      content.className="status err"; content.textContent="No se pudo cargar el Sheet: "+e.message; meta.textContent="";
+  async load() {
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTOr6dTaQEvkPzOY8rTUVNzxcAO53x9kLeTyXP1Fv_G-xJvmM7eNaRyzmlawRcH3w/pub?gid=450868421&single=true&output=csv";
+    this.setState({ loading: this.state.head.length === 0, refreshing: true, error: "" });
+    try {
+      const bust = (SHEET_CSV_URL.indexOf("?") >= 0 ? "&" : "?") + "_t=" + Date.now();
+      const res = await fetch(SHEET_CSV_URL + bust);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const rows = this.parseCSV(await res.text());
+      const head = rows[0] || [];
+      const body = rows.slice(1);
+      this.setState({ head, body, loading: false, refreshing: false, lastUpdated: new Date() });
+    } catch (e) {
+      this.setState({ loading: false, refreshing: false, error: "No se pudo cargar el Sheet: " + e.message });
     }
   }
 
-  document.getElementById("refresh").addEventListener("click", load);
-  load();
-  if(AUTO_REFRESH_SECONDS>0) setInterval(load, AUTO_REFRESH_SECONDS*1000);
+  parseDate(v) {
+    if (!v) return null;
+    const s = String(v).trim();
+    let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+    if (m) {
+      let [_, a, b, y] = m;
+      if (y.length === 2) y = "20" + y;
+      const d = new Date(+y, +a - 1, +b);
+      if (!isNaN(d)) return d;
+    }
+    const d2 = new Date(s);
+    return isNaN(d2) ? null : d2;
+  }
+
+  filteredRows() {
+    const { body, query, filterCol, dateFrom, dateTo, head } = this.state;
+    const q = this.norm(query.trim());
+    const dateCol = this.findCol(head, ["fecha"]);
+    let rows = body.filter(r => {
+      if (q) {
+        if (filterCol >= 0) { if (!this.norm(r[filterCol]).includes(q)) return false; }
+        else if (!r.some(c => this.norm(c).includes(q))) return false;
+      }
+      if (dateCol >= 0 && (dateFrom || dateTo)) {
+        const d = this.parseDate(r[dateCol]);
+        if (!d) return false;
+        if (dateFrom && d < new Date(dateFrom)) return false;
+        if (dateTo && d > new Date(dateTo + "T23:59:59")) return false;
+      }
+      return true;
+    });
+    const { sortCol, sortDir } = this.state;
+    if (sortCol >= 0) {
+      rows = rows.slice().sort((a, b) => {
+        const x = a[sortCol] || "", y = b[sortCol] || "";
+        const nx = parseFloat(String(x).replace(/[^0-9.\-]/g, "")), ny = parseFloat(String(y).replace(/[^0-9.\-]/g, ""));
+        let r;
+        if (!isNaN(nx) && !isNaN(ny) && x !== "" && y !== "") r = nx - ny;
+        else { const nx2 = this.norm(x), ny2 = this.norm(y); r = nx2 < ny2 ? -1 : nx2 > ny2 ? 1 : 0; }
+        return r * sortDir;
+      });
+    }
+    return rows;
+  }
+
+  highlightNode(text, q) {
+    const s = String(text == null ? "" : text);
+    if (!q) return s;
+    const n = this.norm(s), idx = n.indexOf(q);
+    if (idx < 0) return s;
+    return React.createElement(React.Fragment, null,
+      s.slice(0, idx),
+      React.createElement("mark", { style: { background: "rgba(0,0,255,0.15)", color: "#0000FF", borderRadius: "2px", padding: "0 1px" } }, s.slice(idx, idx + q.length)),
+      s.slice(idx + q.length)
+    );
+  }
+
+  toCSV(head, rows) {
+    return [head].concat(rows).map(r => r.map(c => {
+      const s = String(c == null ? "" : c);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(",")).join("\n");
+  }
+
+  downloadCSV() {
+    const rows = this.filteredRows();
+    const blob = new Blob([this.toCSV(this.state.head, rows)], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "tabulador_export.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  renderVals() {
+    const { head, body, query, filterCol, dateFrom, dateTo, sortCol, sortDir, loading, error, lastUpdated, refreshing } = this.state;
+    const couponCol = this.findCol(head, ["cupon"]);
+    const priceCol = this.findCol(head, ["monto", "precio", "total", "price"]);
+    const dateCol = this.findCol(head, ["fecha"]);
+    const q = this.norm(query.trim());
+
+    const dupSet = new Set();
+    if (couponCol >= 0) {
+      const counts = {};
+      body.forEach(r => { const v = (r[couponCol] || "").trim(); if (v) counts[v] = (counts[v] || 0) + 1; });
+      Object.keys(counts).forEach(k => { if (counts[k] > 1) dupSet.add(k); });
+    }
+
+    const rows = loading || error ? [] : this.filteredRows();
+
+    const headers = head.map((h, c) => ({
+      label: h,
+      arrow: sortCol === c ? (sortDir > 0 ? "▲" : "▼") : "",
+      onClick: () => this.setState(s => ({ sortCol: c, sortDir: s.sortCol === c ? -s.sortDir : 1 }))
+    }));
+
+    const tableRows = rows.map((r, ri) => ({
+      key: ri,
+      rowStyle: "border-bottom:1px solid #E4EAF3;background:" + (ri % 2 === 1 ? "#F3F6FF" : "#ffffff") + ";",
+      cells: head.map((_, c) => {
+        const val = r[c] || "";
+        const isDup = c === couponCol && dupSet.has(val.trim());
+        return {
+          node: this.highlightNode(val, q),
+          style: "padding:8px 16px;font-size:13px;white-space:nowrap;color:" + (isDup ? "#FF581B" : "#1A1E25") + ";font-weight:" + (isDup ? "600" : "400") + ";"
+        };
+      })
+    }));
+
+    const summaryCards = [];
+    if (head.length) {
+      summaryCards.push({ label: "Transacciones", value: String(body.length), color: "#0000FF", bg: "#E6ECFF", icon: "receipt" });
+      if (priceCol >= 0) {
+        const sum = body.reduce((acc, r) => { const n = parseFloat(String(r[priceCol] || "").replace(/[^0-9.\-]/g, "")); return acc + (isNaN(n) ? 0 : n); }, 0);
+        summaryCards.push({ label: "Monto total", value: "$" + sum.toLocaleString("es-MX", { maximumFractionDigits: 0 }), color: "#009900", bg: "#E3FCEF", icon: "wallet" });
+      }
+      if (couponCol >= 0) {
+        const dupHas = dupSet.size > 0;
+        summaryCards.push({ label: "Cupones duplicados", value: String(dupSet.size), color: dupHas ? "#FF581B" : "#00028F", bg: dupHas ? "#FFE9E0" : "#E6ECFF", icon: dupHas ? "alert-triangle" : "check-circle-2" });
+      }
+      summaryCards.push({ label: "Mostrando", value: String(rows.length), sub: "de " + body.length + " filas", color: "#823CFF", bg: "#F1E9FF", icon: "filter" });
+    }
+
+    let metaText = "";
+    if (loading) metaText = "Cargando...";
+    else if (error) metaText = "";
+    else metaText = "Actualizado " + (lastUpdated ? lastUpdated.toLocaleTimeString("es-MX") : "") + " · " + body.length + " filas";
+
+    return {
+      headers, rows: tableRows, query, filterCol, dateFrom, dateTo,
+      hasDateCol: dateCol >= 0,
+      filterColOptions: head.map((h, i) => ({ value: i, label: h })),
+      hasSummary: head.length > 0 && !loading && !error,
+      summaryCards,
+      metaText,
+      showError: !!error,
+      errorMsg: error,
+      showLoading: loading,
+      showEmpty: !loading && !error && head.length > 0 && rows.length === 0,
+      showTable: !loading && !error && rows.length > 0,
+      refreshLabel: refreshing ? "Actualizando..." : "Actualizar",
+      refreshIcon: "refresh-cw",
+      refreshIconStyle: refreshing ? "animation:spin 0.8s linear infinite;" : "",
+      onSearch: (e) => this.setState({ query: e.target.value }),
+      onColChange: (e) => this.setState({ filterCol: parseInt(e.target.value, 10) }),
+      onDateFromChange: (e) => this.setState({ dateFrom: e.target.value }),
+      onDateToChange: (e) => this.setState({ dateTo: e.target.value }),
+      onRefresh: () => this.load(),
+      onDownloadCSV: () => this.downloadCSV()
+    };
+  }
+}
 </script>
 </body>
 </html>
