@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agenda de Clases</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: panel del equipo a la izquierda (formulario), vista del alumno a la derecha (en vivo). Debajo: link para Hotmart, comparación y pendientes. */
+:root{
+  --bg:#F3F5F6; --surface:#FFFFFF; --surface-2:#EAEEF0; --fg:#14202A; --muted:#566673; --line:#D5DCE1;
+  --accent:#0B6E5F; --accent-fg:#FFFFFF; --accent-soft:#DDF0EC;
+  --warn:#8A5A00; --warn-soft:#FBEFD2;
+  --font-display:'Space Grotesk',system-ui,sans-serif; --font-body:'Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F171D; --surface:#17222A; --surface-2:#1F2D37; --fg:#E7EDF1; --muted:#93A4B0; --line:#2B3B46;
+  --accent:#3CC2A8; --accent-fg:#06201B; --accent-soft:#12312C; --warn:#F0C265; --warn-soft:#33290F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F171D; --surface:#17222A; --surface-2:#1F2D37; --fg:#E7EDF1; --muted:#93A4B0; --line:#2B3B46;
+  --accent:#3CC2A8; --accent-fg:#06201B; --accent-soft:#12312C; --warn:#F0C265; --warn-soft:#33290F; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:14px/1.5 var(--font-body);
+  padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--font-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:28px;line-height:1.15}
+h2{font-size:18px}
+h3{font-size:15px}
+p{margin:0}
+.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--warn-soft);color:var(--warn);padding:3px 8px;border-radius:4px}
+header{display:flex;flex-direction:column;gap:8px}
+header p{max-width:68ch;color:var(--muted)}
+
+.layout{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:24px;align-items:start}
+@media(max-width:880px){.layout{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.panel-title span{font-size:12px;color:var(--muted)}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;font-size:14px;font-weight:400;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:64px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media(max-width:420px){.row3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.check{flex-direction:row;align-items:center;gap:8px;font-weight:500;color:var(--fg);font-size:13px}
+.check input{width:auto}
+
+button,.btn{font:inherit;font-weight:600;font-size:13px;border-radius:6px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+button:hover,.btn:hover{background:var(--surface-2)}
+.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.primary:hover{background:var(--accent);filter:brightness(1.08)}
+
+/* Vista del alumno */
+.stage{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sim{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.sim select{width:auto;padding:5px 8px;font-size:12px}
+.browser{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.browser-bar{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.browser-bar i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.browser-bar code{margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.page{padding:28px 16px 36px;display:flex;justify-content:center}
+.card{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:26px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.card h2{font-size:24px;line-height:1.2}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.sessions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:8px}
+.sessions li{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.sessions li+li{border-top:1px solid var(--line)}
+.sessions b{font-weight:600;text-transform:capitalize}
+.tzline{font-size:12px;color:var(--muted)}
+.zoom{display:flex;flex-direction:column;gap:8px;padding:14px;background:var(--surface-2);border-radius:8px}
+.zoom dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
+.zoom dt{color:var(--muted)}
+.zoom dd{margin:0;font-variant-numeric:tabular-nums;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.linkbtn{background:none;border:none;padding:0;color:var(--accent);font-size:12px;font-weight:600;text-decoration:underline}
+.linkbtn:hover{background:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;position:relative}
+.menu{position:absolute;top:calc(100% + 6px);left:0;z-index:5;min-width:290px;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;display:flex;flex-direction:column}
+.menu a,.menu button{border:none;border-radius:6px;justify-content:flex-start;text-align:left;padding:9px 10px;font-weight:500;background:transparent;width:100%;flex-wrap:wrap}
+.menu a:hover,.menu button:hover{background:var(--surface-2)}
+.menu small{color:var(--muted);font-weight:400;font-size:11px;margin-left:auto}
+.org{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+/* Resultado y secciones inferiores */
+.out{display:flex;flex-direction:column;gap:10px}
+.copyrow{display:flex;gap:8px}
+.copyrow input{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+details{border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+summary{cursor:pointer;padding:10px 12px;font-weight:600;font-size:13px}
+details pre{margin:0;padding:12px;border-top:1px solid var(--line);font:12px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto}
+.note{font-size:12px;color:var(--muted)}
+.note.warn{background:var(--warn-soft);color:var(--warn);padding:8px 10px;border-radius:6px}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media(max-width:880px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.flow{grid-template-columns:minmax(0,1fr)}}
+.flow div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.flow b{font-family:var(--font-display);font-size:14px}
+.flow span{font-size:12px;color:var(--muted)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:13px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:none}
+.todo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:680px){.todo{grid-template-columns:minmax(0,1fr)}}
+.todo div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.todo span{font-size:13px;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:12px}
+.solo .wrap{max-width:560px}
+@media(prefers-reduced-motion:no-preference){.menu{animation:pop .12s ease-out}@keyframes pop{from{opacity:0;transform:translateY(-3px)}}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header id="hdr">
+    <span class="tag">Propuesta para evaluar · datos de ejemplo</span>
+    <h1>Agenda de Clases</h1>
+    <p>Un solo archivo HTML que reemplaza a AddEvent. El equipo llena el formulario, copia el link y lo pega en Hotmart. El alumno abre la página y agrega todas las sesiones a Google, Apple u Outlook con un clic.</p>
+  </header>
+
+  <div class="layout" id="layout">
+    <div class="panel" id="adminPanel">
+      <div class="panel-title"><h2>Panel del equipo</h2><span>Cambia algo y la vista se actualiza</span></div>
+      <label for="curso">Nombre del evento
+        <input id="curso" value="Grupo 42 y 43 | 9 al 12 de noviembre 2026">
+      </label>
+      <div class="row3">
+        <label for="fecha">Primera clase<input id="fecha" type="date" value="2026-11-09"></label>
+        <label for="hora">Hora de inicio<input id="hora" type="time" value="18:00"></label>
+        <label for="dur">Duración (h)<input id="dur" type="number" min="0.5" max="8" step="0.5" value="2"></label>
+      </div>
+      <div class="row3">
+        <label for="freq">Se repite
+          <select id="freq"><option value="daily">Cada día</option><option value="weekly">Cada semana</option><option value="once">Una sola vez</option></select>
+        </label>
+        <label for="n">Sesiones<input id="n" type="number" min="1" max="30" value="4"></label>
+        <label for="alarm">Recordatorio
+          <select id="alarm"><option value="0">Ninguno</option><option value="15">15 min antes</option><option value="30" selected>30 min antes</option><option value="60">1 hora antes</option></select>
+        </label>
+      </div>
+      <label for="tz">Zona horaria de la clase
+        <select id="tz">
+          <option value="America/Mexico_City">Ciudad de México (UTC−6)</option>
+          <option value="America/Bogota">Bogotá (UTC−5)</option>
+          <option value="America/Lima">Lima (UTC−5)</option>
+          <option value="America/Santiago">Santiago</option>
+          <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC−3)</option>
+          <option value="Europe/Madrid">Madrid</option>
+        </select>
+      </label>
+      <label for="zoom">Link de Zoom<input id="zoom" value="https://us06web.zoom.us/j/00000000000?pwd=EJEMPLO"></label>
+      <div class="row">
+        <label for="zid">ID de reunión<input id="zid" value="000 0000 0000"></label>
+        <label for="zpass">Contraseña<input id="zpass" value="123456"></label>
+      </div>
+      <label class="check" for="showpass"><input id="showpass" type="checkbox" checked>Mostrar ID y contraseña al alumno</label>
+      <label for="desc">Texto extra para el calendario
+        <textarea id="desc">Trae tu laptop y una cuenta de Claude. La clase se graba.</textarea>
+      </label>
+      <label for="org">Organizador<input id="org" value="Academia de IA"></label>
+    </div>
+
+    <div class="stage">
+      <div class="sim">
+        <b style="color:var(--fg)">Vista del alumno</b>
+        <label class="check" for="viewtz" style="font-weight:400;color:var(--muted)">Simular alumno en
+          <select id="viewtz"></select>
+        </label>
+      </div>
+      <div class="browser">
+        <div class="browser-bar"><i></i><i></i><i></i><code id="urlbar"></code></div>
+        <div class="page"><div class="card" id="card"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="extras">
+    <h2>Link para Hotmart</h2>
+    <div class="out">
+      <label for="base">Dónde se publicaría esta página
+        <input id="base" value="https://calendario.academiadeia.com/">
+      </label>
+      <div class="copyrow">
+        <input id="outlink" readonly aria-label="Link generado">
+        <button class="primary" id="copylink" type="button">Copiar link</button>
+      </div>
+      <p class="note">Todos los datos viajan dentro del link. No hay base de datos ni cuenta que pagar. Para medir clics se acorta con Bitly.</p>
+      <details>
+        <summary>Ver archivo .ics y link de Google generados</summary>
+        <pre id="raw"></pre>
+      </details>
+      <p class="note warn" id="icsWarn">Dentro de esta vista previa el navegador bloquea las descargas. En una página publicada, el botón "Descargar .ics" funciona normal. Mientras tanto puedes copiar el contenido del archivo.</p>
+      <div><button id="copyics" type="button">Copiar contenido .ics</button></div>
+    </div>
+  </section>
+
+  <section id="flowsec">
+    <h2>Cómo encaja en lo que ya usan</h2>
+    <div class="flow">
+      <div><b>1. Formulario</b><span>El equipo llena una vez por grupo (menos de un minuto).</span></div>
+      <div><b>2. Link corto</b><span>Se acorta en Bitly para contar clics por grupo.</span></div>
+      <div><b>3. Hotmart</b><span>Se pega en el módulo o mensaje de bienvenida, como hoy.</span></div>
+      <div><b>4. Alumno</b><span>Abre, elige su calendario y quedan todas las sesiones.</span></div>
+    </div>
+  </section>
+
+  <section id="cmp">
+    <h2>AddEvent contra esta propuesta</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Tema</th><th>AddEvent hoy</th><th>Propuesta</th></tr></thead>
+      <tbody>
+        <tr><td>Costo</td><td>Plan Professional de pago</td><td>$0 en hosting estático (GoHighLevel, GitHub Pages o Cloudflare Pages)</td></tr>
+        <tr><td>Eventos recurrentes</td><td>Sí</td><td>Sí, diario o semanal, con número de sesiones</td></tr>
+        <tr><td>Google, Apple, Outlook</td><td>Sí</td><td>Sí. Google y .ics incluyen todas las sesiones</td></tr>
+        <tr><td>Outlook.com y Office 365 en web</td><td>Sí</td><td>Solo la primera sesión. Para todas se usa el .ics</td></tr>
+        <tr><td>Conteo de "event-adds"</td><td>Panel incluido</td><td>Se mide con clics de Bitly (no cuenta cuántos agregaron, sino cuántos abrieron el link)</td></tr>
+        <tr><td>Historial de eventos</td><td>47 eventos en un solo calendario</td><td>No hay panel. Cada grupo es un link nuevo; se puede guardar una hoja con los links</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="todosec">
+    <h2>Qué falta para hacerla real</h2>
+    <div class="todo">
+      <div><b>Publicarla</b><span>Subir este archivo a un hosting y, si se quiere, ponerle un subdominio de Academia de IA.</span></div>
+      <div><b>Marca</b><span>Cambiar colores y tipografía por los de Academia de IA y agregar el logo.</span></div>
+      <div><b>Duplicar grupos</b><span>Botón para clonar el grupo anterior y cambiar solo fechas y link. Hoy ya hacen eso con Hotmart.</span></div>
+      <div><b>Fechas salteadas</b><span>Para grupos con días no consecutivos (por ejemplo lunes y jueves) se agregaría una lista de fechas.</span></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var VIEW_TZS=[["America/Mexico_City","Ciudad de México"],["America/Bogota","Bogotá"],["America/Lima","Lima"],["America/Argentina/Buenos_Aires","Buenos Aires"],["Europe/Madrid","Madrid"],["America/Los_Angeles","Los Ángeles"]];
+  var browserTz="America/Mexico_City";
+  try{browserTz=Intl.DateTimeFormat().resolvedOptions().timeZone||browserTz}catch(e){}
+
+  /* ---- zona horaria ---- */
+  function offMs(d,tz){
+    var f=new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    var p={};f.formatToParts(d).forEach(function(x){p[x.type]=x.value});
+    return Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute,+p.second)-d.getTime();
+  }
+  function zonedToUtc(ds,ts,tz){
+    var a=ds.split('-').map(Number),b=ts.split(':').map(Number);
+    var guess=Date.UTC(a[0],a[1]-1,a[2],b[0],b[1]);
+    var o=offMs(new Date(guess),tz);
+    o=offMs(new Date(guess-o),tz);
+    return new Date(guess-o);
+  }
+  function addDays(ds,n){var a=ds.split('-').map(Number);return new Date(Date.UTC(a[0],a[1]-1,a[2]+n)).toISOString().slice(0,10)}
+
+  /* ---- datos ---- */
+  var F=['curso','fecha','hora','dur','freq','n','alarm','tz','zoom','zid','zpass','desc','org'];
+  function read(){
+    var s={};F.forEach(function(k){s[k]=$(k).value});
+    s.showpass=$('showpass').checked?1:0;
+    s.n=Math.max(1,Math.min(30,parseInt(s.n,10)||1));
+    s.dur=Math.max(.5,parseFloat(s.dur)||1);
+    if(s.freq==='once')s.n=1;
+    return s;
+  }
+  function sessions(s){
+    var step=s.freq==='weekly'?7:1,out=[];
+    for(var i=0;i<s.n;i++){
+      var ds=addDays(s.fecha,i*step);
+      var st=zonedToUtc(ds,s.hora,s.tz);
+      out.push({start:st,end:new Date(st.getTime()+s.dur*3600000)});
+    }
+    return out;
+  }
+  function stamp(d){return d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'')}
+  function iso(d){return d.toISOString().replace(/\.\d{3}Z$/,'Z')}
+  function bodyText(s){
+    var t=s.desc?s.desc+'\n\n':'';
+    t+='Link de Zoom: '+s.zoom;
+    if(s.showpass&&s.zid)t+='\nID de reunión: '+s.zid;
+    if(s.showpass&&s.zpass)t+='\nContraseña: '+s.zpass;
+    return t;
+  }
+
+  /* ---- links y .ics ---- */
+  function rrule(s){return s.freq==='once'?'':'FREQ='+(s.freq==='weekly'?'WEEKLY':'DAILY')+';COUNT='+s.n}
+  function googleUrl(s,ss){
+    var u='https://calendar.google.com/calendar/render?action=TEMPLATE'
+      +'&text='+encodeURIComponent(s.curso)
+      +'&dates='+stamp(ss[0].start)+'/'+stamp(ss[0].end)
+      +'&details='+encodeURIComponent(bodyText(s))
+      +'&location='+encodeURIComponent(s.zoom)
+      +'&ctz='+encodeURIComponent(s.tz);
+    var r=rrule(s);if(r)u+='&recur='+encodeURIComponent('RRULE:'+r);
+    return u;
+  }
+  function msUrl(host,s,ss){
+    return 'https://'+host+'/calendar/0/deeplink/compose?path='+encodeURIComponent('/calendar/action/compose')+'&rru=addevent'
+      +'&subject='+encodeURIComponent(s.curso)
+      +'&startdt='+encodeURIComponent(iso(ss[0].start))+'&enddt='+encodeURIComponent(iso(ss[0].end))
+      +'&body='+encodeURIComponent(bodyText(s).replace(/\n/g,'<br>'))
+      +'&location='+encodeURIComponent(s.zoom);
+  }
+  function esc(t){return String(t).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n')}
+  function fold(l){var o=[];while(l.length>74){o.push(l.slice(0,74));l=' '+l.slice(74)}o.push(l);return o.join('\r\n')}
+  function icsText(s,ss){
+    var uid=stamp(ss[0].start)+'-'+s.curso.replace(/[^a-z0-9]/gi,'').slice(0,20).toLowerCase()+'@agenda-academiadeia';
+    var L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Academia de IA//Agenda de Clases//ES','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+      'BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+stamp(new Date()),
+      'DTSTART:'+stamp(ss[0].start),'DTEND:'+stamp(ss[0].end)];
+    var r=rrule(s);if(r)L.push('RRULE:'+r);
+    L.push('SUMMARY:'+esc(s.curso),'DESCRIPTION:'+esc(bodyText(s)),'LOCATION:'+esc(s.zoom));
+    if(s.org)L.push('ORGANIZER;CN='+esc(s.org)+':mailto:noreply@academiadeia.com');
+    if(+s.alarm>0)L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+esc(s.curso),'TRIGGER:-PT'+s.alarm+'M','END:VALARM');
+    L.push('END:VEVENT','END:VCALENDAR');
+    return L.map(fold).join('\r\n');
+  }
+  function downloadIcs(s,ss){
+    try{
+      var b=new Blob([icsText(s,ss)],{type:'text/calendar;charset=utf-8'});
+      var a=document.createElement('a');a.href=URL.createObjectURL(b);
+      a.download=(s.curso.replace(/[^a-z0-9]+/gi,'-').slice(0,40)||'clase')+'.ics';
+      document.body.appendChild(a);a.click();a.remove();
+    }catch(e){}
+  }
+
+  /* ---- link compartible ---- */
+  function encodeState(s){var j=JSON.stringify(s);return btoa(unescape(encodeURIComponent(j))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+  function decodeState(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return JSON.parse(decodeURIComponent(escape(atob(t))))}
+
+  /* ---- render del alumno ---- */
+  var viewTz=browserTz,menuOpen=false,passShown=false,currentS=null,currentSS=null;
+  function fmtDate(d,tz){return new Intl.DateTimeFormat('es-MX',{weekday:'long',day:'numeric',month:'long',timeZone:tz}).format(d)}
+  function fmtTime(d,tz){return new Intl.DateTimeFormat('es-MX',{hour:'numeric',minute:'2-digit',hour12:true,timeZone:tz}).format(d)}
+  function tzName(tz){var m=VIEW_TZS.filter(function(x){return x[0]===tz})[0];return m?m[1]:tz.split('/').pop().replace(/_/g,' ')}
+  function h(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  function renderCard(s,ss){
+    currentS=s;currentSS=ss;
+    var rows=ss.map(function(x){
+      return '<li><b>'+h(fmtDate(x.start,viewTz))+'</b><span>'+h(fmtTime(x.start,viewTz))+' a '+h(fmtTime(x.end,viewTz))+'</span></li>';
+    }).join('');
+    var same=viewTz===s.tz;
+    var tzline=same?'Horario de '+tzName(viewTz)+'.':'Horario convertido a tu zona ('+tzName(viewTz)+'). La clase es a las '+fmtTime(ss[0].start,s.tz)+' de '+tzName(s.tz)+'.';
+    var zoomRows='';
+    if(s.showpass&&(s.zid||s.zpass)){
+      zoomRows='<dl>'+(s.zid?'<dt>ID</dt><dd>'+h(s.zid)+'</dd>':'')
+        +(s.zpass?'<dt>Contraseña</dt><dd>'+(passShown?h(s.zpass):'••••••')+' <button class="linkbtn" type="button" data-act="pass">'+(passShown?'Ocultar':'Mostrar')+'</button></dd>':'')+'</dl>';
+    }
+    var recurText=s.freq==='once'?'Una sesión':ss.length+' sesiones, '+(s.freq==='weekly'?'una por semana':'una por día');
+    var menu='';
+    if(menuOpen){
+      menu='<div class="menu" role="menu">'
+       +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(googleUrl(s,ss))+'">Google Calendar<small>todas las sesiones</small></a>'
+       +'<button role="menuitem" type="button" data-act="ics">Apple Calendar<small>descarga .ics</small></button>'
+       +'<button role="menuitem" type="button" data-act="ics">Outlook (escritorio)<small>descarga .ics</small></button>'
+       +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(msUrl('outlook.office.com',s,ss))+'">Office 365 web<small>primera sesión</small></a>'
+       +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(msUrl('outlook.live.com',s,ss))+'">Outlook.com<small>primera sesión</small></a>'
+       +'</div>';
+    }
+    $('card').innerHTML=
+      '<div><span class="eyebrow">'+h(recurText)+'</span></div>'
+      +'<h2>'+h(s.curso)+'</h2>'
+      +'<ul class="sessions">'+rows+'</ul>'
+      +'<p class="tzline">'+h(tzline)+'</p>'
+      +'<div class="zoom"><a class="btn primary" target="_blank" rel="noopener" href="'+h(s.zoom)+'">Entrar a Zoom</a>'+zoomRows+'</div>'
+      +'<div class="actions"><button type="button" class="primary" data-act="menu" aria-expanded="'+menuOpen+'">Agregar a mi calendario</button>'+menu+'</div>'
+      +(s.org?'<p class="org">Organiza: '+h(s.org)+'</p>':'');
+  }
+  $('card').addEventListener('click',function(e){
+    var t=e.target.closest('[data-act]');if(!t)return;
+    var a=t.getAttribute('data-act');
+    if(a==='menu'){menuOpen=!menuOpen;renderCard(currentS,currentSS)}
+    else if(a==='pass'){passShown=!passShown;renderCard(currentS,currentSS)}
+    else if(a==='ics'){downloadIcs(currentS,currentSS)}
+  });
+  document.addEventListener('click',function(e){
+    if(menuOpen&&!e.target.closest('.actions')){menuOpen=false;if(currentS)renderCard(currentS,currentSS)}
+  });
+
+  /* ---- panel ---- */
+  function copy(text,btn,ok){
+    function done(){var o=btn.textContent;btn.textContent=ok;setTimeout(function(){btn.textContent=o},1500)}
+    try{navigator.clipboard.writeText(text).then(done,function(){fallback()})}catch(e){fallback()}
+    function fallback(){var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}t.remove()}
+  }
+  function update(){
+    var s=read(),ss=sessions(s);
+    renderCard(s,ss);
+    var link=($('base').value||'').replace(/\/?$/,'/')+'?d='+encodeState(s);
+    $('outlink').value=link;
+    $('urlbar').textContent=($('base').value||'').replace(/^https?:\/\//,'')+'?d=…';
+    $('raw').textContent='LINK DE GOOGLE\n'+googleUrl(s,ss)+'\n\nARCHIVO .ICS\n'+icsText(s,ss).replace(/\r\n/g,'\n');
+  }
+
+  /* ---- arranque ---- */
+  var sel=$('viewtz');
+  var list=VIEW_TZS.slice();
+  if(!list.some(function(x){return x[0]===browserTz}))list.unshift([browserTz,tzName(browserTz)]);
+  list.forEach(function(x){var o=document.createElement('option');o.value=x[0];o.textContent=x[1];sel.appendChild(o)});
+  sel.value=viewTz;
+  sel.addEventListener('change',function(){viewTz=sel.value;update()});
+  F.concat(['showpass','base']).forEach(function(k){$(k).addEventListener('input',update);$(k).addEventListener('change',update)});
+  $('copylink').addEventListener('click',function(){copy($('outlink').value,$('copylink'),'Copiado')});
+  $('copyics').addEventListener('click',function(){copy(icsText(read(),sessions(read())).replace(/\r\n/g,'\n'),$('copyics'),'Copiado')});
+
+  /* Si el link trae ?d=..., la página funciona como vista del alumno */
+  var q=null;try{q=new URLSearchParams(location.search).get('d')}catch(e){}
+  if(q){
+    try{
+      var s=decodeState(q);
+      ['hdr','extras','flowsec','cmp','todosec','adminPanel'].forEach(function(id){var el=$(id);if(el)el.remove()});
+      document.querySelector('.sim').remove();
+      var br=document.querySelector('.browser');br.style.border='none';br.style.background='transparent';
+      br.querySelector('.browser-bar').remove();
+      $('layout').style.gridTemplateColumns='minmax(0,1fr)';
+      viewTz=browserTz;renderCard(s,sessions(s));
+    }catch(e){update()}
+  }else{update()}
+})();
+</script>
+
+</body>
+</html>
