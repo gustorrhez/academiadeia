@@ -367,9 +367,11 @@ button:hover,.btn:hover{background:var(--surface-2)}
   function ruleOf(f){return !f.freq||f.freq==='once'?'':'FREQ='+(f.freq==='weekly'?'WEEKLY':'DAILY')+';COUNT='+f.n}
   function workerUrl(){var w=($('wk')&&$('wk').value||'').trim();return /^https:\/\//.test(w)?w.replace(/\/?$/,'/'):''}
   function icsItem(f,rule){
-    var lab=rule?'Apple, Outlook y otros':'Apple Calendar y Outlook escritorio',w=workerUrl();
-    if(w)return '<a role="menuitem" href="'+h(w+'?d='+enc64(f))+'">'+lab+'<small>abre tu app de calendario</small></a>';
-    return '<button role="menuitem" type="button" data-act="ics">'+lab+'<small>descarga un archivo</small></button>';
+    var w=workerUrl();
+    if(!w)return '<button role="menuitem" type="button" data-act="ics">Apple, Outlook y otros<small>descarga un archivo</small></button>';
+    var u=w+'?d='+enc64(f);
+    return '<a role="menuitem" href="'+h(u.replace(/^https:/,'webcal:'))+'">Apple Calendar<small>iPhone, iPad y Mac: abre la app</small></a>'
+      +'<a role="menuitem" href="'+h(u)+'">Outlook de escritorio y otros<small>descarga un archivo</small></a>';
   }
   function eventMenu(m){
     var f=m.s,first=sessions(Object.assign({freq:'once',n:1},f))[0],rule=ruleOf(f);
