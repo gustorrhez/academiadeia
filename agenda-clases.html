@@ -243,6 +243,9 @@ button:hover,.btn:hover{background:var(--surface-2)}
     <label for="base">Dirección donde está publicada esta página
       <input id="base" value="https://gustorrhez.github.io/academiadeia/agenda-clases.html">
     </label>
+    <label for="wk">Dirección del servicio de archivos .ics (Cloudflare Worker)
+      <input id="wk" value="https://agenda-academiadeia.gus-torres-hernandez-84.workers.dev/">
+    </label>
   </div>
 </div>
 
@@ -362,6 +365,12 @@ button:hover,.btn:hover{background:var(--surface-2)}
     return '<div class="actions"><button type="button" class="primary" data-act="menu" aria-expanded="'+open+'">Agregar a mi calendario</button>'+(open?menuHtml(m.id,m.calName):'')+'</div>';
   }
   function ruleOf(f){return !f.freq||f.freq==='once'?'':'FREQ='+(f.freq==='weekly'?'WEEKLY':'DAILY')+';COUNT='+f.n}
+  function workerUrl(){var w=($('wk')&&$('wk').value||'').trim();return /^https:\/\//.test(w)?w.replace(/\/?$/,'/'):''}
+  function icsItem(f,rule){
+    var lab=rule?'Apple, Outlook y otros':'Apple Calendar y Outlook escritorio',w=workerUrl();
+    if(w)return '<a role="menuitem" href="'+h(w+'?d='+enc64(f))+'">'+lab+'<small>abre tu app de calendario</small></a>';
+    return '<button role="menuitem" type="button" data-act="ics">'+lab+'<small>descarga un archivo</small></button>';
+  }
   function eventMenu(m){
     var f=m.s,first=sessions(Object.assign({freq:'once',n:1},f))[0],rule=ruleOf(f);
     var t=(f.desc?f.desc+'\n\n':'')+'Link de Zoom: '+f.zoom+(f.show&&f.zid?'\nID de reunión: '+f.zid:'')+(f.show&&f.zpass?'\nContraseña: '+f.zpass:'');
@@ -371,12 +380,12 @@ button:hover,.btn:hover{background:var(--surface-2)}
      +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(eventUrl(f,first,rule))+'">Google Calendar<small>Gmail o Google Workspace</small></a>'
      +(rule?'':'<a role="menuitem" target="_blank" rel="noopener" href="'+h(ol('outlook.office.com'))+'">Microsoft 365 web<small>cuenta de trabajo</small></a>'
      +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(ol('outlook.live.com'))+'">Outlook.com<small>cuenta personal</small></a>')
-     +'<button role="menuitem" type="button" data-act="ics">'+(rule?'Apple, Outlook y otros':'Apple Calendar y Outlook escritorio')+'<small>descarga un archivo</small></button>'
+     +icsItem(f,rule)
      +'</div>';
   }
   function buildIcs(f){
     var first=sessions(Object.assign({freq:'once',n:1},f))[0];
-    var esc=function(x){return String(x).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\;')};
+    var esc=function(x){return String(x).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\u005c;')};
     var t=(f.desc?f.desc+'\n\n':'')+'Link de Zoom: '+f.zoom+(f.show&&f.zid?'\nID de reunión: '+f.zid:'')+(f.show&&f.zpass?'\nContraseña: '+f.zpass:'');
     var uid=(stamp(first.start)+'-'+f.name.replace(/[^a-z0-9]/gi,'').toLowerCase()).slice(0,60)+'@academiadeia.com';
     return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Academia de IA//Agenda de clases//ES','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
