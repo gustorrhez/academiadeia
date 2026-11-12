@@ -121,67 +121,58 @@ button:hover,.btn:hover{background:var(--surface-2)}
   </header>
 
   <div class="tabs admin" role="tablist">
-    <button class="tab" role="tab" id="tabF" aria-selected="true" aria-controls="viewF" type="button">Calendario fijo</button>
-    <button class="tab" role="tab" id="tabG" aria-selected="false" aria-controls="viewG" type="button">Grupo nuevo</button>
+    <button class="tab" role="tab" id="tabF" aria-selected="true" aria-controls="viewF" type="button">Calendario para webinar</button>
+    <button class="tab" role="tab" id="tabG" aria-selected="false" aria-controls="viewG" type="button">Calendario grupo clases</button>
   </div>
 
   <!-- CALENDARIO FIJO -->
   <div class="layout" id="viewF" role="tabpanel">
     <div class="panel admin">
-      <p class="note">Para webinars y programas que repiten día, hora y Zoom. Lo creas una vez; después solo mueves las fechas en Google Calendar y el link no cambia.</p>
+      <p class="note">Un evento por webinar. Cada alumno recibe su propia copia: si después cambias la fecha, a quien ya se agendó antes no se le mueve nada.</p>
       <div class="step">
-        <h3><i>1</i>Crea el calendario en Google</h3>
-        <a class="btn" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar">Abrir Google Calendar</a>
-        <p class="hint">Ponle el nombre del programa y, en Configuración, hazlo disponible públicamente.</p>
+        <h3><i>1</i>Trae los datos de tu evento</h3>
+        <label for="f_imp">Pega aquí el link de plantilla de Google, un archivo .ics o el texto del evento
+          <textarea id="f_imp" placeholder="Pega y se llenan solos título, fecha, hora y Zoom"></textarea>
+        </label>
+        <p class="hint" id="f_impmsg">Si prefieres, llena los campos a mano en el paso 2.</p>
       </div>
       <div class="step">
         <h3><i>2</i>Datos del webinar</h3>
         <label for="f_k">Curso<select id="f_k"></select></label>
-        <label for="f_name">Título<input id="f_name" value="Webinar Domina Claude"></label>
+        <label for="f_name">Título<input id="f_name" value="Claude Evento Webinar"></label>
         <label for="f_text">Texto de apoyo
-          <textarea id="f_text">Agrega el calendario y recibe cada clase con su link de Zoom directo en tu agenda.</textarea>
+          <textarea id="f_text">Agrega este webinar a tu calendario y entra con un clic a Zoom.</textarea>
         </label>
-        <div class="field" role="group" aria-labelledby="f_days_l">
-          <span class="fl" id="f_days_l">Días en que se repite</span>
-          <div class="days" id="f_days"></div>
-        </div>
         <div class="row3">
-          <label for="f_hora">Hora de inicio<input id="f_hora" type="time" value="19:00"></label>
+          <label for="f_fecha">Fecha<input id="f_fecha" type="date" value="2026-11-18"></label>
+          <label for="f_hora">Hora de inicio<input id="f_hora" type="time" value="09:00"></label>
           <label for="f_dur">Duración (h)<input id="f_dur" type="number" min="0.5" max="8" step="0.5" value="2"></label>
-          <label for="f_tz">Zona horaria
-            <select id="f_tz">
-              <option value="America/Mexico_City">Ciudad de México</option>
-              <option value="America/Bogota">Bogotá</option>
-              <option value="America/Lima">Lima</option>
-              <option value="America/Santiago">Santiago</option>
-              <option value="America/Argentina/Buenos_Aires">Buenos Aires</option>
-              <option value="Europe/Madrid">Madrid</option>
-            </select>
-          </label>
         </div>
-        <label for="f_zoom">Link de Zoom<input id="f_zoom" value="https://us06web.zoom.us/j/00000000000?pwd=EJEMPLO"></label>
+        <label for="f_tz">Zona horaria
+          <select id="f_tz">
+            <option value="America/Mexico_City">Ciudad de México</option>
+            <option value="America/Bogota">Bogotá</option>
+            <option value="America/Lima">Lima</option>
+            <option value="America/Santiago">Santiago</option>
+            <option value="America/Argentina/Buenos_Aires">Buenos Aires</option>
+            <option value="Europe/Madrid">Madrid</option>
+          </select>
+        </label>
+        <label for="f_zoom">Link de Zoom<input id="f_zoom" value="https://us06web.zoom.us/j/84551486714?pwd=hPdQS4DCbG4RuFeZi3zEb7GaolERPH.1"></label>
         <div class="row">
-          <label for="f_zid">ID de reunión<input id="f_zid" value="000 0000 0000"></label>
-          <label for="f_zpass">Contraseña<input id="f_zpass" value="123456"></label>
+          <label for="f_zid">ID de reunión<input id="f_zid" value="845 5148 6714"></label>
+          <label for="f_zpass">Contraseña<input id="f_zpass" value="926503"></label>
         </div>
         <label class="check" for="f_show"><input id="f_show" type="checkbox" checked>Mostrar ID y contraseña al alumno</label>
-        <label for="f_desc">Texto extra para el evento de Google
+        <label for="f_desc">Texto extra para el evento
           <textarea id="f_desc"></textarea>
         </label>
       </div>
       <div class="step">
-        <h3><i>3</i>Crea el evento en el calendario</h3>
-        <a class="btn" id="f_event" target="_blank" rel="noopener" href="#">Abrir evento en Google Calendar</a>
-        <p class="hint">Se abre con todo lleno y repetición semanal sin fin. Elige el calendario del webinar y pulsa Guardar. Si una semana cambia la fecha, edítala ahí.</p>
-      </div>
-      <div class="step">
-        <h3><i>4</i>Pega el ID y copia el link</h3>
-        <label for="f_id">ID del calendario de Google
-          <input id="f_id" value="c_e15aa41879553c01d97a3807c139c7acbd0a7289068d453d75b3600115c864ac@group.calendar.google.com">
-        </label>
-        <p class="hint">Lo encuentras en Configuración del calendario, sección "Integrar calendario".</p>
-        <div class="copyrow"><input id="f_link" readonly aria-label="Link del calendario fijo"><button class="primary" id="f_copy" type="button">Copiar</button></div>
-        <p class="note">Pásalo por el acortador de Academia de IA antes de pegarlo en Hotmart.</p>
+        <h3><i>3</i>Copia el link para Hotmart</h3>
+        <div class="copyrow"><input id="f_link" readonly aria-label="Link del webinar"><button class="primary" id="f_copy" type="button">Copiar</button></div>
+        <p class="note">Para el siguiente webinar solo cambia la fecha y copia el link nuevo. Pásalo por el acortador de Academia de IA antes de pegarlo en Hotmart.</p>
+        <a class="btn" id="f_event" target="_blank" rel="noopener" href="#">Ver cómo queda en mi Google Calendar</a>
       </div>
     </div>
     <div class="stage">
@@ -196,18 +187,13 @@ button:hover,.btn:hover{background:var(--surface-2)}
   <!-- GRUPO NUEVO -->
   <div class="layout" id="viewG" role="tabpanel" hidden>
     <div class="panel admin">
-      <p class="note">Para un grupo con bloque de fechas propio. Cada grupo tiene su calendario, y el alumno ve solo sus clases.</p>
-      <div class="step">
-        <h3><i>1</i>Crea el calendario del grupo</h3>
-        <a class="btn" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/u/0/r/settings/createcalendar">Abrir Google Calendar</a>
-        <p class="hint">Nómbralo igual que el grupo y hazlo disponible públicamente.</p>
-      </div>
+      <p class="note">Para un grupo con bloque de fechas propio (por ejemplo, 4 días seguidos). Es un solo evento recurrente: cada alumno recibe su propia copia con todas sus clases.</p>
       <div class="step">
         <h3><i>2</i>Datos del grupo</h3>
         <label for="g_k">Curso<select id="g_k"></select></label>
-        <label for="g_name">Nombre del grupo<input id="g_name" value="Grupo 42 y 43 | 9 al 12 de noviembre 2026"></label>
+        <label for="g_name">Nombre del grupo<input id="g_name" value="Claude para Profesionales | 23 al 26 de noviembre 2026"></label>
         <div class="row">
-          <label for="g_fecha">Primera clase<input id="g_fecha" type="date" value="2026-11-09"></label>
+          <label for="g_fecha">Primera clase<input id="g_fecha" type="date" value="2026-11-23"></label>
           <label for="g_hora">Hora de inicio<input id="g_hora" type="time" value="18:00"></label>
         </div>
         <div class="row3">
@@ -227,10 +213,10 @@ button:hover,.btn:hover{background:var(--surface-2)}
             <option value="Europe/Madrid">Madrid</option>
           </select>
         </label>
-        <label for="g_zoom">Link de Zoom<input id="g_zoom" value="https://us06web.zoom.us/j/00000000000?pwd=EJEMPLO"></label>
+        <label for="g_zoom">Link de Zoom<input id="g_zoom" value="https://us06web.zoom.us/j/84551486714?pwd=hPdQS4DCbG4RuFeZi3zEb7GaolERPH.1"></label>
         <div class="row">
-          <label for="g_zid">ID de reunión<input id="g_zid" value="000 0000 0000"></label>
-          <label for="g_zpass">Contraseña<input id="g_zpass" value="123456"></label>
+          <label for="g_zid">ID de reunión<input id="g_zid" value="845 5148 6714"></label>
+          <label for="g_zpass">Contraseña<input id="g_zpass" value="926503"></label>
         </div>
         <label class="check" for="g_show"><input id="g_show" type="checkbox" checked>Mostrar ID y contraseña al alumno</label>
         <label for="g_desc">Texto extra para el evento de Google
@@ -238,17 +224,10 @@ button:hover,.btn:hover{background:var(--surface-2)}
         </label>
       </div>
       <div class="step">
-        <h3><i>3</i>Crea el evento en el calendario</h3>
-        <a class="btn" id="g_event" target="_blank" rel="noopener" href="#">Abrir evento en Google Calendar</a>
-        <p class="hint">Se abre con todo lleno. Elige el calendario del grupo y pulsa Guardar.</p>
-      </div>
-      <div class="step">
-        <h3><i>4</i>Pega el ID y copia el link</h3>
-        <label for="g_id">ID del calendario de Google
-          <input id="g_id" value="c_e15aa41879553c01d97a3807c139c7acbd0a7289068d453d75b3600115c864ac@group.calendar.google.com">
-        </label>
+        <h3><i>3</i>Copia el link para Hotmart</h3>
         <div class="copyrow"><input id="g_link" readonly aria-label="Link del grupo"><button class="primary" id="g_copy" type="button">Copiar</button></div>
         <p class="note">Pásalo por el acortador de Academia de IA antes de pegarlo en Hotmart.</p>
+        <a class="btn" id="g_event" target="_blank" rel="noopener" href="#">Ver cómo queda en mi Google Calendar</a>
       </div>
     </div>
     <div class="stage">
@@ -382,30 +361,55 @@ button:hover,.btn:hover{background:var(--surface-2)}
     var open=ui.open===cid;
     return '<div class="actions"><button type="button" class="primary" data-act="menu" aria-expanded="'+open+'">Agregar a mi calendario</button>'+(open?menuHtml(m.id,m.calName):'')+'</div>';
   }
+  function ruleOf(f){return !f.freq||f.freq==='once'?'':'FREQ='+(f.freq==='weekly'?'WEEKLY':'DAILY')+';COUNT='+f.n}
+  function eventMenu(m){
+    var f=m.s,first=sessions(Object.assign({freq:'once',n:1},f))[0],rule=ruleOf(f);
+    var t=(f.desc?f.desc+'\n\n':'')+'Link de Zoom: '+f.zoom+(f.show&&f.zid?'\nID de reunión: '+f.zid:'')+(f.show&&f.zpass?'\nContraseña: '+f.zpass:'');
+    var iso=function(d){return d.toISOString().replace(/\.\d{3}Z$/,'Z')};
+    var ol=function(host){return 'https://'+host+'/calendar/0/deeplink/compose?path=%2Fcalendar%2Faction%2Fcompose&rru=addevent&subject='+encodeURIComponent(f.name)+'&startdt='+encodeURIComponent(iso(first.start))+'&enddt='+encodeURIComponent(iso(first.end))+'&body='+encodeURIComponent(t.replace(/\n/g,'<br>'))+'&location='+encodeURIComponent(f.zoom)};
+    return '<div class="menu" role="menu">'
+     +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(eventUrl(f,first,rule))+'">Google Calendar<small>Gmail o Google Workspace</small></a>'
+     +(rule?'':'<a role="menuitem" target="_blank" rel="noopener" href="'+h(ol('outlook.office.com'))+'">Microsoft 365 web<small>cuenta de trabajo</small></a>'
+     +'<a role="menuitem" target="_blank" rel="noopener" href="'+h(ol('outlook.live.com'))+'">Outlook.com<small>cuenta personal</small></a>')
+     +'<button role="menuitem" type="button" data-act="ics">'+(rule?'Apple, Outlook y otros':'Apple Calendar y Outlook escritorio')+'<small>descarga un archivo</small></button>'
+     +'</div>';
+  }
+  function buildIcs(f){
+    var first=sessions(Object.assign({freq:'once',n:1},f))[0];
+    var esc=function(x){return String(x).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\;')};
+    var t=(f.desc?f.desc+'\n\n':'')+'Link de Zoom: '+f.zoom+(f.show&&f.zid?'\nID de reunión: '+f.zid:'')+(f.show&&f.zpass?'\nContraseña: '+f.zpass:'');
+    var uid=(stamp(first.start)+'-'+f.name.replace(/[^a-z0-9]/gi,'').toLowerCase()).slice(0,60)+'@academiadeia.com';
+    return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Academia de IA//Agenda de clases//ES','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',
+      'UID:'+uid,'DTSTAMP:'+stamp(new Date()),'DTSTART:'+stamp(first.start),'DTEND:'+stamp(first.end)].concat(ruleOf(f)?['RRULE:'+ruleOf(f)]:[],['SUMMARY:'+esc(f.name),'DESCRIPTION:'+esc(t),'LOCATION:'+esc(f.zoom),
+      'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY','DESCRIPTION:'+esc(f.name),'END:VALARM','END:VEVENT','END:VCALENDAR']).join('\r\n');
+  }
+  function downloadIcs(f){
+    var blob=new Blob([buildIcs(f)],{type:'text/calendar;charset=utf-8'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(f.name.replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'')||'webinar')+'.ics';
+    document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);
+  }
   function renderFixed(cid){
     var m=models[cid],f=m.s,sched='';
-    if(f.days&&f.days.length){
-      var fs=fixedSessions(f);
-      var rows=fs.map(function(x){
-        var wd=new Intl.DateTimeFormat('es-MX',{weekday:'long',timeZone:viewTz}).format(x.start);
-        return '<li><b>Todos los '+h(plural(wd))+'</b><span>'+h(fmtTime(x.start,viewTz))+' a '+h(fmtTime(x.end,viewTz))+'</span></li>';
-      }).join('');
-      var tzl=viewTz===f.tz?'Horario de '+tzName(viewTz)+'.':'Horario convertido a tu zona ('+tzName(viewTz)+'). La clase es a las '+fmtTime(fs[0].start,f.tz)+' de '+tzName(f.tz)+'.';
+    try{
+      var x=sessions(Object.assign({freq:'once',n:1},f))[0];
+      var tzl=viewTz===f.tz?'Horario de '+tzName(viewTz)+'.':'Horario convertido a tu zona ('+tzName(viewTz)+'). El webinar es a las '+fmtTime(x.start,f.tz)+' de '+tzName(f.tz)+'.';
       var zr='';
       if(f.show&&(f.zid||f.zpass)){
         zr='<dl>'+(f.zid?'<dt>ID</dt><dd>'+h(f.zid)+'</dd>':'')
           +(f.zpass?'<dt>Contraseña</dt><dd>'+(ui.pass?h(f.zpass):'••••••')+' <button class="linkbtn" type="button" data-act="pass">'+(ui.pass?'Ocultar':'Mostrar')+'</button></dd>':'')+'</dl>';
       }
-      sched='<ul class="sessions">'+rows+'</ul><p class="tzline">'+h(tzl)+'</p>'
+      var dl=fmtDate(x.start,viewTz);
+      sched='<ul class="sessions"><li><b>'+h(dl.charAt(0).toUpperCase()+dl.slice(1))+'</b><span>'+h(fmtTime(x.start,viewTz))+' a '+h(fmtTime(x.end,viewTz))+'</span></li></ul><p class="tzline">'+h(tzl)+'</p>'
         +(f.zoom?'<div class="zoom"><a class="btn primary" target="_blank" rel="noopener" href="'+h(f.zoom)+'">Entrar a Zoom</a>'+zr+'</div>':'');
-    }
+    }catch(e){}
+    var open=ui.open===cid;
     $(cid).innerHTML=band(f.k)+'<div class="cbody">'
-      +'<div><span class="eyebrow">Calendario fijo</span></div>'
+      +'<div><span class="eyebrow">Webinar</span></div>'
       +'<h2>'+h(f.name)+'</h2>'
       +(f.text?'<p class="lead">'+h(f.text)+'</p>':'')
       +sched
-      +actions(cid,m)
-      +'<p class="foot">Si cambia una fecha o el link de Zoom, tu calendario se actualiza solo. En Apple y Outlook puede tardar unas horas.</p>'
+      +'<div class="actions"><button type="button" class="primary" data-act="menu" aria-expanded="'+open+'">Agregar a mi calendario</button>'+(open&&sched?eventMenu(m):'')+'</div>'
+      +'<p class="foot">Se agrega solo este webinar a tu calendario. Si inicia otro, vuelve a agregarlo desde su link.</p>'
       +'</div>';
   }
   function renderGroup(cid){
@@ -424,7 +428,8 @@ button:hover,.btn:hover{background:var(--surface-2)}
       +'<ul class="sessions">'+rows+'</ul>'
       +'<p class="tzline">'+h(tzl)+'</p>'
       +'<div class="zoom"><a class="btn primary" target="_blank" rel="noopener" href="'+h(s.zoom)+'">Entrar a Zoom</a>'+zr+'</div>'
-      +(m.id?actions(cid,m):'<p class="hint">Pega el ID del calendario para activar el botón.</p>')
+      +'<div class="actions"><button type="button" class="primary" data-act="menu" aria-expanded="'+(ui.open===cid)+'">Agregar a mi calendario</button>'+(ui.open===cid?eventMenu(m):'')+'</div>'
+      +'<p class="foot">Se agregan todas tus clases de este grupo como un solo evento.</p>'
       +'</div>';
   }
   function render(cid){if(!models[cid])return;(models[cid].kind==='f'?renderFixed:renderGroup)(cid)}
@@ -436,6 +441,7 @@ button:hover,.btn:hover{background:var(--surface-2)}
       var a=t.getAttribute('data-act'),cid=card.id;
       if(a==='menu'){ui.open=ui.open===cid?null:cid;render(cid)}
       else if(a==='pass'){ui.pass=!ui.pass;render(cid)}
+      else if(a==='ics'){downloadIcs(models[cid].s);ui.open=null;render(cid)}
       else if(a==='copy'){
         var txt=subLinks(models[cid].id,models[cid].calName).ics;
         var done=function(){ui.copied=true;render(cid);setTimeout(function(){ui.copied=false;render(cid)},1500)};
@@ -460,30 +466,89 @@ button:hover,.btn:hover{background:var(--surface-2)}
     return s;
   }
   function readF(){
-    var days=[];DOWS.forEach(function(d){var el=$('f_d'+d[0]);if(el&&el.checked)days.push(d[0])});
-    return {k:$('f_k').value,name:$('f_name').value.trim()||'Calendario de clases',text:$('f_text').value.trim(),days:days,
+    return {k:$('f_k').value,name:$('f_name').value.trim()||'Webinar',text:$('f_text').value.trim(),fecha:$('f_fecha').value,
       hora:$('f_hora').value,dur:Math.max(.5,parseFloat($('f_dur').value)||1),tz:$('f_tz').value,zoom:$('f_zoom').value.trim(),
       zid:$('f_zid').value,zpass:$('f_zpass').value,show:$('f_show').checked?1:0,desc:$('f_desc').value};
   }
   function updateF(){
-    var f=readF(),id=$('f_id').value.trim();
-    models.cardF={kind:'f',s:f,id:id,calName:f.name};
-    render('cardF');
-    if(f.days.length){
-      var fs=fixedSessions(f),byday=DOWS.filter(function(d){return f.days.indexOf(d[0])>-1}).map(function(d){return d[2]}).join(',');
-      $('f_event').href=eventUrl(f,fs[0],'FREQ=WEEKLY;BYDAY='+byday);
+    var f=readF(),ok=!!(f.fecha&&f.hora);
+    models.cardF={kind:'f',s:f,calName:f.name};
+    var fine=true;try{sessions(Object.assign({freq:'once',n:1},f))}catch(e){fine=false}
+    if(ok&&fine){
+      render('cardF');
+      $('f_event').href=eventUrl(f,sessions(Object.assign({freq:'once',n:1},f))[0],'');
+      $('f_link').value=baseUrl()+'?e='+enc64(f);
+    }else{$('f_link').value='Falta la fecha u hora'}
+    document.querySelectorAll('#viewF .urlbar').forEach(function(el){el.textContent=baseUrl().replace(/^https?:\/\//,'')+'?e=…'});
+  }
+  /* importar desde un evento de Google (link de plantilla, .ics o texto) */
+  function localParts(d,tz){
+    var p={};new Intl.DateTimeFormat('en-CA',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).formatToParts(d).forEach(function(x){p[x.type]=x.value});
+    return {date:p.year+'-'+p.month+'-'+p.day,time:p.hour+':'+p.minute};
+  }
+  function parseStamp(v,tzid,fallbackTz){
+    var m=String(v).trim().match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})?)?(Z?)$/);if(!m)return null;
+    if(!m[4])return {date:m[1]+'-'+m[2]+'-'+m[3],time:'00:00',utc:null};
+    if(m[7]){var d=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0)));return {utc:d}}
+    var tz=tzid||fallbackTz;try{new Intl.DateTimeFormat('en',{timeZone:tz})}catch(e){tz=fallbackTz}
+    return {utc:zonedToUtc(m[1]+'-'+m[2]+'-'+m[3],m[4]+':'+m[5],tz)};
+  }
+  function parseImport(txt,tz){
+    var r={},t=txt.trim();if(!t)return null;
+    var zm=t.match(/https?:\/\/[\w.-]*zoom\.us\/[^\s"'<>\\)]+/i);
+    if(/BEGIN:VEVENT/.test(t)){
+      var lines=t.replace(/\r?\n[ \t]/g,'').split(/\r?\n/),ev={},inEv=false;
+      lines.forEach(function(l){
+        if(/^BEGIN:VEVENT/.test(l)){inEv=true;return}if(/^END:VEVENT/.test(l)){inEv=false;return}
+        if(!inEv)return;var i=l.indexOf(':');if(i<0)return;
+        var key=l.slice(0,i),val=l.slice(i+1),name=key.split(';')[0].toUpperCase(),tzm=key.match(/TZID=([^;:]+)/);
+        if(ev[name])return;ev[name]={v:val,tz:tzm&&tzm[1]};
+      });
+      var unesc=function(x){return x.replace(/\\n/gi,'\n').replace(/\\([,;\\])/g,'$1')};
+      if(ev.SUMMARY)r.name=unesc(ev.SUMMARY.v);
+      if(ev.LOCATION)r.loc=unesc(ev.LOCATION.v);
+      if(ev.DESCRIPTION)r.desc=unesc(ev.DESCRIPTION.v);
+      var st=ev.DTSTART&&parseStamp(ev.DTSTART.v,ev.DTSTART.tz,tz),en=ev.DTEND&&parseStamp(ev.DTEND.v,ev.DTEND.tz,tz);
+      if(st&&st.utc){r.start=st.utc;if(en&&en.utc)r.end=en.utc}
+    }else if(/calendar\.google\.com\/.*[?&]dates=/.test(t)||/[?&]dates=\d{8}T/.test(t)){
+      var q;try{q=new URL(t.match(/https?:\/\/\S+/)[0]).searchParams}catch(e){q=new URLSearchParams(t.slice(t.indexOf('?')+1))}
+      if(q.get('text'))r.name=q.get('text');if(q.get('location'))r.loc=q.get('location');if(q.get('details'))r.desc=q.get('details');
+      var dd=(q.get('dates')||'').split('/'),a=parseStamp(dd[0],q.get('ctz'),tz),b=dd[1]&&parseStamp(dd[1],q.get('ctz'),tz);
+      if(a&&a.utc){r.start=a.utc;if(b&&b.utc)r.end=b.utc}
+    }else{
+      r.desc=t;var lines2=t.split(/\r?\n/);if(lines2[0]&&lines2[0].length<120&&!/^https?:/.test(lines2[0]))r.name=lines2[0].trim();
     }
-    var o=JSON.parse(JSON.stringify(f));o.id=id;
-    $('f_link').value=id?baseUrl()+'?f='+enc64(o):'Pega el ID del calendario';
-    document.querySelectorAll('#viewF .urlbar').forEach(function(el){el.textContent=baseUrl().replace(/^https?:\/\//,'')+'?f=…'});
+    var z=(r.loc&&r.loc.match(/https?:\/\/[\w.-]*zoom\.us\/\S+/i))||zm;
+    if(z)r.zoom=z[0].replace(/[.,;]+$/,'');
+    var src=(r.desc||'')+'\n'+(r.loc||'');
+    var idm=src.match(/(?:ID(?: de reuni[oó]n)?|Meeting ID)\s*[:：]?\s*(\d{3}[\s-]?\d{3,4}[\s-]?\d{3,4})/i);
+    if(idm)r.zid=idm[1];else if(r.zoom){var jm=r.zoom.match(/\/j\/(\d{9,11})/);if(jm){var n=jm[1];r.zid=n.length===11?n.slice(0,3)+' '+n.slice(3,7)+' '+n.slice(7):n.slice(0,3)+' '+n.slice(3,6)+' '+n.slice(6)}}
+    var pm=src.match(/(?:Contrase[ñn]a|Passcode|Password)\s*[:：]?\s*(\S+)/i);
+    if(pm)r.zpass=pm[1];else if(r.zoom){var pw=r.zoom.match(/[?&]pwd=([^&\s]+)/);if(pw)r.pwd=pw[1]}
+    if(r.start){var lp=localParts(r.start,tz);r.fecha=lp.date;r.hora=lp.time;if(r.end)r.dur=Math.round((r.end-r.start)/1800000)/2}
+    return r;
+  }
+  function doImport(){
+    var r=parseImport($('f_imp').value,$('f_tz').value),msg=$('f_impmsg');
+    if(!r){msg.textContent='Si prefieres, llena los campos a mano en el paso 2.';return}
+    var got=[];
+    function set(id,v,label){if(v!==undefined&&v!==''&&v!==null){$(id).value=v;got.push(label)}}
+    set('f_name',r.name,'título');set('f_fecha',r.fecha,'fecha');set('f_hora',r.hora,'hora');set('f_dur',r.dur,'duración');
+    set('f_zoom',r.zoom,'Zoom');set('f_zid',r.zid,'ID');set('f_zpass',r.zpass,'contraseña');
+    $('f_desc').value='';
+    if(r.desc&&r.desc.trim()){
+      var clean=r.desc.split(/\r?\n/).filter(function(l){return !/zoom\.us|^\s*(ID|Meeting ID|Contrase|Passcode|Password|Link de Zoom)/i.test(l)}).join('\n').trim();
+      if(clean&&clean!==r.name){$('f_desc').value=clean;got.push('texto extra')}
+    }
+    msg.textContent=got.length?'Se llenó: '+got.join(', ')+'. Revísalo en el paso 2.':'No encontré datos reconocibles. Llena los campos a mano.';
+    updateF();
   }
   function updateG(){
-    var s=readG(),id=$('g_id').value.trim();
-    models.cardG={kind:'g',s:s,id:id,calName:s.name};
+    var s=readG();
+    models.cardG={kind:'g',s:s,calName:s.name};
     render('cardG');
-    $('g_event').href=eventUrl(s,sessions(s)[0],s.freq==='once'?'':'FREQ='+(s.freq==='weekly'?'WEEKLY':'DAILY')+';COUNT='+s.n);
-    var o=JSON.parse(JSON.stringify(s));o.id=id;
-    $('g_link').value=id?baseUrl()+'?d='+enc64(o):'Pega el ID del calendario';
+    $('g_event').href=eventUrl(s,sessions(s)[0],ruleOf(s));
+    $('g_link').value=baseUrl()+'?d='+enc64(s);
     document.querySelectorAll('#viewG .urlbar').forEach(function(el){el.textContent=baseUrl().replace(/^https?:\/\//,'')+'?d=…'});
   }
   function setTab(which){
@@ -495,12 +560,6 @@ button:hover,.btn:hover{background:var(--surface-2)}
 
   /* ---- arranque ---- */
   function startAdmin(){
-    var wrap=$('f_days');
-    DOWS.forEach(function(d){
-      var l=document.createElement('label');l.setAttribute('for','f_d'+d[0]);
-      l.innerHTML='<input type="checkbox" id="f_d'+d[0]+'" value="'+d[0]+'"'+(d[0]===3?' checked':'')+'>'+d[1];
-      wrap.appendChild(l);
-    });
     var list=VIEW_TZS.slice();
     if(!list.some(function(x){return x[0]===browserTz}))list.unshift([browserTz,tzName(browserTz)]);
     ['viewtz','viewtzF'].forEach(function(id){
@@ -509,10 +568,10 @@ button:hover,.btn:hover{background:var(--surface-2)}
       sel.value=viewTz;
       sel.addEventListener('change',function(){viewTz=sel.value;$('viewtz').value=viewTz;$('viewtzF').value=viewTz;updateF();updateG()});
     });
-    var fids=['f_k','f_name','f_text','f_hora','f_dur','f_tz','f_zoom','f_zid','f_zpass','f_show','f_desc','f_id','base'];
-    DOWS.forEach(function(d){fids.push('f_d'+d[0])});
+    var fids=['f_k','f_name','f_text','f_fecha','f_hora','f_dur','f_tz','f_zoom','f_zid','f_zpass','f_show','f_desc','base'];
     fids.forEach(function(id){$(id).addEventListener('input',updateF);$(id).addEventListener('change',updateF)});
-    ['g_k','g_name','g_fecha','g_hora','g_dur','g_freq','g_n','g_tz','g_zoom','g_zid','g_zpass','g_show','g_desc','g_id','base'].forEach(function(id){$(id).addEventListener('input',updateG);$(id).addEventListener('change',updateG)});
+    ['g_k','g_name','g_fecha','g_hora','g_dur','g_freq','g_n','g_tz','g_zoom','g_zid','g_zpass','g_show','g_desc','base'].forEach(function(id){$(id).addEventListener('input',updateG);$(id).addEventListener('change',updateG)});
+    $('f_imp').addEventListener('input',doImport);
     $('tabF').addEventListener('click',function(){setTab('f')});
     $('tabG').addEventListener('click',function(){setTab('g')});
     $('f_copy').addEventListener('click',function(){copy($('f_link').value,$('f_copy'))});
@@ -520,18 +579,18 @@ button:hover,.btn:hover{background:var(--surface-2)}
     updateF();updateG();
   }
   var sp=null;try{sp=new URLSearchParams(location.search)}catch(e){}
-  var qc=sp&&sp.get('c'),qd=sp&&sp.get('d'),qf=sp&&sp.get('f');
-  if(qf){
-    var okf=false;
+  var qc=sp&&sp.get('c'),qd=sp&&sp.get('d'),qe=sp&&sp.get('e');
+  if(qe){
+    var oke=false;
     try{
-      var of=dec64(qf);
-      if(of.days&&of.days.length)fixedSessions(of);
+      var oe=dec64(qe);
+      sessions(Object.assign({freq:'once',n:1},oe));
       document.body.classList.add('student');
       $('viewG').remove();
-      models.cardF={kind:'f',s:of,id:of.id,calName:of.name};
-      render('cardF');okf=true;
+      models.cardF={kind:'f',s:oe,calName:oe.name};
+      render('cardF');oke=true;
     }catch(e){}
-    if(!okf)startAdmin();
+    if(!oke)startAdmin();
   }else if(qc){
     document.body.classList.add('student');
     $('viewG').remove();
@@ -546,7 +605,7 @@ button:hover,.btn:hover{background:var(--surface-2)}
       sessions(s0);
       document.body.classList.add('student');
       $('viewF').remove();$('viewG').hidden=false;
-      models.cardG={kind:'g',s:s0,id:o.id,calName:o.name};
+      models.cardG={kind:'g',s:s0,calName:o.name};
       render('cardG');okd=true;
     }catch(e){}
     if(!okd){startAdmin()}
